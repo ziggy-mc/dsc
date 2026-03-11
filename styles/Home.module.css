@@ -375,7 +375,161 @@
   user-select: none;
 }
 
-/* ── Animations ───────────────────────────────────────────────────────────── */
+/* ── Auth Bar ────────────────────────────────────────────────────────────── */
+
+.authBar {
+  margin-bottom: 1.25rem;
+}
+
+.authUser {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.authAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.authName {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.authLinks {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.authLink {
+  font-size: 0.82rem;
+  color: var(--blurple);
+  text-decoration: none;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  border: 1px solid rgba(88, 101, 242, 0.35);
+  transition: background 0.15s ease;
+}
+
+.authLink:hover {
+  background: rgba(88, 101, 242, 0.1);
+}
+
+.authSignOut {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.authSignOut:hover {
+  color: var(--text-secondary);
+  border-color: var(--text-secondary);
+}
+
+.loginButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  background: var(--blurple);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.loginButton:hover {
+  background: var(--blurple-hover);
+  transform: translateY(-1px);
+}
+
+/* ── Tier Badges ─────────────────────────────────────────────────────────── */
+
+.badgePaid {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.badgeFree {
+  background: rgba(88, 101, 242, 0.15);
+  color: var(--blurple);
+  border: 1px solid rgba(88, 101, 242, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+/* ── Guest Notice ────────────────────────────────────────────────────────── */
+
+.guestNotice {
+  background: rgba(88, 101, 242, 0.08);
+  border: 1px solid rgba(88, 101, 242, 0.22);
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.guestNoticeLink {
+  background: none;
+  border: none;
+  color: var(--blurple);
+  font-size: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* ── Tier Info Strip ─────────────────────────────────────────────────────── */
+
+.tierInfo {
+  display: flex;
+  gap: 1rem;
+  padding: 0.55rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Blurred Input ───────────────────────────────────────────────────────── */
+
+.inputBlurred {
+  filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+}
+
+
 
 @keyframes fadeIn {
   from {

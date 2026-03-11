@@ -1,0 +1,358 @@
+/* ── Dashboard Layout ─────────────────────────────────────────────────────── */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: rgba(32, 34, 37, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebarBrand {
+  padding: 0 0.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.75rem;
+}
+
+.sidebarBrandText {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--blurple);
+  letter-spacing: -0.01em;
+}
+
+.navLink {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.navLink:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.navLinkActive {
+  background: rgba(88, 101, 242, 0.15);
+  color: var(--blurple);
+}
+
+/* ── Main ────────────────────────────────────────────────────────────────── */
+
+.main {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  overflow-y: auto;
+}
+
+/* ── Page Header ─────────────────────────────────────────────────────────── */
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(88, 101, 242, 0.4);
+}
+
+.userName {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.3rem;
+}
+
+.tierBadge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+/* ── Stats Grid ──────────────────────────────────────────────────────────── */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.statCard {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.statLabel {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.statMax {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* ── Action Buttons ──────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background: var(--blurple);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.actionButton:hover {
+  background: var(--blurple-hover);
+  transform: translateY(-1px);
+}
+
+.actionButtonOutline {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.actionButtonOutline:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+/* ── Upgrade Notice ──────────────────────────────────────────────────────── */
+
+.upgradeNotice {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  padding: 0.9rem 1.25rem;
+  color: #f59e0b;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* ── Error Banner ────────────────────────────────────────────────────────── */
+
+.errorBanner {
+  background: rgba(237, 66, 69, 0.1);
+  border: 1px solid rgba(237, 66, 69, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--red);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Empty State ─────────────────────────────────────────────────────────── */
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.table th {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr {
+  transition: background 0.15s ease;
+}
+
+.table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.rowExpired td {
+  opacity: 0.5;
+}
+
+.linkCell {
+  color: var(--blurple);
+  font-weight: 600;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  transition: opacity 0.15s;
+}
+
+.linkCell:hover {
+  opacity: 0.75;
+}
+
+.targetCell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deleteButton {
+  padding: 0.35rem 0.75rem;
+  background: rgba(237, 66, 69, 0.1);
+  color: var(--red);
+  border: 1px solid rgba(237, 66, 69, 0.3);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: rgba(237, 66, 69, 0.2);
+  transform: translateY(-1px);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main {
+    padding: 1.25rem 1rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+}
