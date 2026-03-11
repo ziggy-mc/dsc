@@ -36,11 +36,12 @@ export const authOptions = {
 
     /**
      * After a successful sign-in, upsert the User document in MongoDB.
+     * Blocks login if the account is suspended.
      */
     async signIn({ profile }) {
       try {
         await connectToDatabase();
-        await User.findOneAndUpdate(
+        const user = await User.findOneAndUpdate(
           { discordId: profile.id },
           {
             $set: { discordUsername: profile.username },
@@ -50,8 +51,11 @@ export const authOptions = {
               "shortener.totalLinksCreated": 0,
             },
           },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
         );
+        if (user && user.suspended) {
+          return "/?error=suspended";
+        }
         return true;
       } catch (err) {
         console.error("Failed to upsert user on sign-in:", err);

@@ -59,6 +59,11 @@ const userSchema = new mongoose.Schema(
         default: 0,
       },
     },
+
+    suspended: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

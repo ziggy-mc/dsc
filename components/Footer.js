@@ -20,6 +20,9 @@ export default function Footer() {
           <Link href="/dashboard/links" className={styles.footerLink}>
             My Links
           </Link>
+          <Link href="/report" className={styles.footerLink}>
+            Report Link
+          </Link>
         </nav>
 
         <div className={styles.footerLegal}>
