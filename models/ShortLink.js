@@ -36,6 +36,11 @@ const shortLinkSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    /** number of times this link has been opened */
+    count: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },

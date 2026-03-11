@@ -14,8 +14,12 @@ const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
 async function resolveCode(code) {
   await connectToDatabase();
 
-  // Check new ShortLink model first
-  const sl = await ShortLink.findOne({ code }).lean();
+  // Check new ShortLink model first (and increment the open counter)
+  const sl = await ShortLink.findOneAndUpdate(
+    { code },
+    { $inc: { count: 1 } },
+    { new: true, lean: true }
+  );
   if (sl) {
     return {
       targetUrl: sl.targetUrl,
