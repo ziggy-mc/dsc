@@ -30,7 +30,7 @@ function isValidDiscordUrl(url) {
  * Body: { url: string }
  * Response: { code: string, shortUrl: string }
  */
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -48,13 +48,18 @@ export default function handler(req, res) {
     });
   }
 
-  const code = generateCode();
-  saveLink(code, url.trim());
+  try {
+    const code = await generateCode();
+    await saveLink(code, url.trim());
 
-  // Build short URL from the request host header
-  const protocol = req.headers["x-forwarded-proto"] || "http";
-  const host = req.headers.host;
-  const shortUrl = `${protocol}://${host}/${code}`;
+    // Build short URL from the request host header
+    const protocol = req.headers["x-forwarded-proto"] || "http";
+    const host = req.headers.host;
+    const shortUrl = `${protocol}://${host}/${code}`;
 
-  return res.status(200).json({ code, shortUrl });
+    return res.status(200).json({ code, shortUrl });
+  } catch (err) {
+    console.error("Failed to shorten link:", err);
+    return res.status(500).json({ error: "Failed to create short link. Please try again." });
+  }
 }

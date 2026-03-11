@@ -7,7 +7,14 @@ import { getLink } from "../lib/store";
  */
 export async function getServerSideProps({ params }) {
   const { code } = params;
-  const url = getLink(code);
+
+  let url = null;
+  try {
+    url = await getLink(code);
+  } catch (err) {
+    console.error("Failed to look up short code:", err);
+    return { notFound: true };
+  }
 
   if (!url) {
     return { notFound: true };
