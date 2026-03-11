@@ -161,6 +161,7 @@ export default async function handler(req, res) {
       domain: baseUrl,
       expiresAt,
       isPermanent,
+      loading: tier !== TIERS.PAID,
     });
 
     // Increment the user's total links created counter
