@@ -174,6 +174,17 @@ export default function RedirectPage({ targetUrl, delayMs }) {
           <p style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
             You&apos;ll be taken there in a moment.
           </p>
+          <p style={{ color: "var(--text-muted)", fontSize: "0.78rem", marginTop: "1rem" }}>
+            If you would like to create your own discord short links, create them here:{" "}
+            <a
+              href="https://dscs.ziggymc.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#5865f2" }}
+            >
+              https://dscs.ziggymc.me
+            </a>
+          </p>
         </div>
       </div>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
