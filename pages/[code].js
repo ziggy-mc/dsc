@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "./api/auth/[...nextauth]";
 import { connectToDatabase } from "../lib/mongodb";
 import ShortLink from "../models/ShortLink";
 import { getLink } from "../lib/store";
-import { getUserTier } from "../lib/tiers";
-import { TIERS } from "../lib/tierConstants";
 
 const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
 
@@ -26,6 +22,7 @@ async function resolveCode(code) {
       isPermanent: sl.isPermanent,
       expiresAt: sl.expiresAt,
       ownerDiscordId: sl.ownerDiscordId,
+      loading: sl.loading !== false, // default true for legacy docs without the field
     };
   }
 
@@ -37,6 +34,7 @@ async function resolveCode(code) {
       isPermanent: false,
       expiresAt: null,
       ownerDiscordId: null,
+      loading: true,
     };
   }
 
@@ -68,7 +66,7 @@ export async function getServerSideProps({ params, req, res }) {
     };
   }
 
-  const { targetUrl, isPermanent, expiresAt } = resolved;
+  const { targetUrl, isPermanent, expiresAt, loading } = resolved;
 
   // Check expiration
   if (!isPermanent && expiresAt && new Date(expiresAt) <= new Date()) {
@@ -86,13 +84,8 @@ export async function getServerSideProps({ params, req, res }) {
     };
   }
 
-  // Determine the redirect delay based on the *visitor's* tier
-  const session = await getServerSession(req, res, authOptions);
-  const visitorDiscordId = session?.user?.discordId || null;
-  const visitorTier = await getUserTier(visitorDiscordId);
-
-  // Paid supporters get an instant redirect (server-side)
-  if (visitorTier === TIERS.PAID) {
+  // Supporters (loading: false) get an instant redirect; guests/free users see a loading screen
+  if (!loading) {
     return {
       redirect: {
         destination: targetUrl,

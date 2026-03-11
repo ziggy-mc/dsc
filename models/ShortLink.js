@@ -31,6 +31,11 @@ const shortLinkSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    /** true for guest/free users (shows redirecting screen); false for supporters (instant redirect) */
+    loading: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },
