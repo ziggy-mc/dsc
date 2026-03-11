@@ -96,13 +96,17 @@ export async function getServerSideProps({ params, req, res }) {
 
   // Guests and free users see a loading screen
   const delayMs = 1750;
+  const shortUrl = `${PRIMARY_DOMAIN}/${code}`;
   return {
-    props: { targetUrl, delayMs },
+    props: { targetUrl, delayMs, shortUrl },
   };
 }
 
+const INVITE_PAGE_TITLE = "Invite - Discord Link Shortener";
+const INVITE_PAGE_DESCRIPTION = `Go to ${PRIMARY_DOMAIN} to shorten your invite link for free`;
+
 /** Loading screen shown to guests and free users before redirect */
-export default function RedirectPage({ targetUrl, delayMs }) {
+export default function RedirectPage({ targetUrl, delayMs, shortUrl }) {
   const [dots, setDots] = useState(".");
 
   useEffect(() => {
@@ -125,8 +129,13 @@ export default function RedirectPage({ targetUrl, delayMs }) {
   return (
     <>
       <Head>
-        <title>Redirecting…</title>
+        <title>{INVITE_PAGE_TITLE}</title>
         <meta name="robots" content="noindex" />
+        <meta name="description" content={INVITE_PAGE_DESCRIPTION} />
+        <meta property="og:title" content={INVITE_PAGE_TITLE} />
+        <meta property="og:description" content={INVITE_PAGE_DESCRIPTION} />
+        <meta property="og:url" content={shortUrl} />
+        <meta property="og:type" content="website" />
       </Head>
       <div
         style={{

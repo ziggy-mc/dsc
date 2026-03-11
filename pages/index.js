@@ -216,13 +216,17 @@ export default function Home({ initialError }) {
   return (
     <Layout>
       <Head>
-        <title>Discord Invite Shortener</title>
+        <title>Discord Link Shortener</title>
         <meta
           name="description"
           content="Shorten your Discord invite links instantly. Clean, fast, free."
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <meta property="og:title" content="Discord Link Shortener" />
+        <meta property="og:description" content="Shorten your Discord invite links instantly. Clean, fast, free." />
+        <meta property="og:url" content="https://dscs.ziggymc.me" />
+        <meta property="og:type" content="website" />
       </Head>
 
       <main className={styles.main}>
