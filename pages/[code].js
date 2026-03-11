@@ -1,23 +1,41 @@
 import { getLink } from "../lib/store";
 
+const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
+
 /**
  * Dynamic redirect route: /<code>
- * Looks up the short code in the store and redirects to the original Discord invite URL.
- * Returns a 404 page if the code is not found.
+ *
+ * Behaviour:
+ *  - If the request comes from the Vercel domain (zmcdsc.vercel.app), it acts
+ *    as a pure redirect domain: resolve the code and forward to the Discord
+ *    invite URL.
+ *  - If the short code is not found (on either domain), redirect the visitor
+ *    to the primary domain with an error query param so the UI can surface a
+ *    helpful message.
  */
-export function getServerSideProps({ params }) {
+export async function getServerSideProps({ params, req }) {
   const { code } = params;
 
   let url = null;
   try {
-    url = getLink(code);
+    url = await getLink(code);
   } catch (err) {
     console.error("Failed to look up short code:", err);
-    return { notFound: true };
+    return {
+      redirect: {
+        destination: `${PRIMARY_DOMAIN}?error=notfound`,
+        permanent: false,
+      },
+    };
   }
 
   if (!url) {
-    return { notFound: true };
+    return {
+      redirect: {
+        destination: `${PRIMARY_DOMAIN}?error=notfound`,
+        permanent: false,
+      },
+    };
   }
 
   return {
@@ -28,7 +46,7 @@ export function getServerSideProps({ params }) {
   };
 }
 
-// This component is never rendered because getServerSideProps either redirects or returns 404
+// This component is never rendered because getServerSideProps always redirects
 export default function RedirectPage() {
   return null;
 }

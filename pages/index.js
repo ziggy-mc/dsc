@@ -2,11 +2,71 @@ import { useState } from "react";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 
+/** The Vercel deployment domain that should redirect to the primary domain */
+const VERCEL_DOMAIN = "zmcdsc.vercel.app";
+
+/** The primary domain where the UI lives */
+const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
+
 /** Short domains the user can choose from */
 const DOMAINS = [
   "https://zmcdsc.vercel.app",
   "https://dscs.ziggymc.me",
 ];
+
+/**
+ * Redirect visitors on the Vercel domain to the primary domain, and pass
+ * through any error state from short-code resolution.
+ */
+export function getServerSideProps({ req, query }) {
+  const host = req.headers.host;
+
+  // Redirect bare visits to zmcdsc.vercel.app → primary domain
+  if (host === VERCEL_DOMAIN) {
+    return {
+      redirect: {
+        destination: PRIMARY_DOMAIN,
+        permanent: false,
+      },
+    };
+  }
+
+  // Propagate error state from [code].js redirects
+  const initialError =
+    query.error === "notfound" ? "Short URL doesn't exist" : null;
+
+  return {
+    props: { initialError },
+  };
+}
+
+/** Error notification box shown when a short code could not be resolved */
+function ErrorNotification({ message, onClose }) {
+  return (
+    <div className={styles.errorNotification} role="alert">
+      {/* Semi-transparent background icon */}
+      <svg
+        className={styles.errorNotificationBgIcon}
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          fill="currentColor"
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+        />
+      </svg>
+      <span className={styles.errorNotificationText}>{message}</span>
+      <button
+        className={styles.errorNotificationClose}
+        onClick={onClose}
+        aria-label="Dismiss error"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
 
 /** Discord logo SVG (official brand asset) */
 function DiscordIcon() {
@@ -50,12 +110,13 @@ function extractInviteCode(inputUrl) {
   return "";
 }
 
-export default function Home() {
+export default function Home({ initialError }) {
   const [url, setUrl] = useState("");
   const [domain, setDomain] = useState(DOMAINS[0]);
   const [shortLink, setShortLink] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
+  const [notFoundError, setNotFoundError] = useState(initialError || "");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState("");
@@ -142,6 +203,14 @@ export default function Home() {
           <p className={styles.subtitle}>
             Paste a Discord invite link below to generate a short, shareable URL.
           </p>
+
+          {/* ── Not-Found Error Notification ── */}
+          {notFoundError && (
+            <ErrorNotification
+              message={notFoundError}
+              onClose={() => setNotFoundError("")}
+            />
+          )}
 
           {/* ── URL Input ── */}
           <div className={styles.inputGroup}>
