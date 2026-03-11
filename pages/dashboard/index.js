@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { getUserTier, countUserLinks } from "../../lib/tiers";
 import { LIMITS, TIERS } from "../../lib/tierConstants";
+import Layout from "../../components/Layout";
 import styles from "../../styles/Dashboard.module.css";
 
 export async function getServerSideProps({ req, res }) {
@@ -28,11 +29,10 @@ export async function getServerSideProps({ req, res }) {
 }
 
 export default function DashboardHome({ user, tier, counts, limits }) {
-  const tierLabel = tier === TIERS.PAID ? "⚡ Supporter" : "Free";
-  const tierColor = tier === TIERS.PAID ? "#f59e0b" : "#5865f2";
+  const tierLabel = tier === TIERS.PAID ? "Supporter" : "Free";
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>Dashboard – Discord Invite Shortener</title>
         <meta name="robots" content="noindex" />
@@ -42,10 +42,10 @@ export default function DashboardHome({ user, tier, counts, limits }) {
         {/* Sidebar */}
         <nav className={styles.sidebar}>
           <div className={styles.sidebarBrand}>
-            <span className={styles.sidebarBrandText}>DSC Shortener</span>
+            <span className={styles.sidebarBrandText}>Dashboard</span>
           </div>
-          <Link href="/dashboard" className={styles.navLink}>
-            🏠 Home
+          <Link href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
+            🏠 Overview
           </Link>
           <Link href="/dashboard/links" className={styles.navLink}>
             🔗 My Links
@@ -57,18 +57,18 @@ export default function DashboardHome({ user, tier, counts, limits }) {
 
         {/* Main */}
         <main className={styles.main}>
-          <div className={styles.pageHeader}>
-            <div className={styles.userInfo}>
-              {user.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={user.image} alt="" className={styles.avatar} />
-              )}
-              <div>
-                <h1 className={styles.userName}>{user.name}</h1>
-                <span className={styles.tierBadge} style={{ background: tierColor }}>
-                  {tierLabel}
-                </span>
-              </div>
+          {/* Account overview card */}
+          <div className={styles.accountCard}>
+            {user.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={user.image} alt="" className={styles.avatar} />
+            )}
+            <div className={styles.accountInfo}>
+              <h1 className={styles.userName}>{user.name}</h1>
+              <p className={styles.tierLabel}>
+                Account tier:{" "}
+                <span className={styles.tierName}>{tierLabel}</span>
+              </p>
             </div>
           </div>
 
@@ -116,6 +116,6 @@ export default function DashboardHome({ user, tier, counts, limits }) {
           )}
         </main>
       </div>
-    </>
+    </Layout>
   );
 }

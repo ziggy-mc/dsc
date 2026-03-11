@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
 import { connectToDatabase } from "../../lib/mongodb";
 import ShortLink from "../../models/ShortLink";
+import Layout from "../../components/Layout";
 import styles from "../../styles/Dashboard.module.css";
 
 export async function getServerSideProps({ req, res }) {
@@ -72,7 +73,7 @@ export default function LinksPage({ links: initialLinks }) {
   };
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>My Links – Discord Invite Shortener</title>
         <meta name="robots" content="noindex" />
@@ -82,10 +83,10 @@ export default function LinksPage({ links: initialLinks }) {
         {/* Sidebar */}
         <nav className={styles.sidebar}>
           <div className={styles.sidebarBrand}>
-            <span className={styles.sidebarBrandText}>DSC Shortener</span>
+            <span className={styles.sidebarBrandText}>Dashboard</span>
           </div>
           <Link href="/dashboard" className={styles.navLink}>
-            🏠 Home
+            🏠 Overview
           </Link>
           <Link href="/dashboard/links" className={`${styles.navLink} ${styles.navLinkActive}`}>
             🔗 My Links
@@ -123,10 +124,10 @@ export default function LinksPage({ links: initialLinks }) {
                 <thead>
                   <tr>
                     <th>Short URL</th>
-                    <th>Target</th>
+                    <th>Destination</th>
                     <th>Created</th>
-                    <th>Expires</th>
-                    <th>Remaining</th>
+                    <th>Expiration</th>
+                    <th>Time Remaining</th>
                     <th>Delete</th>
                   </tr>
                 </thead>
@@ -188,6 +189,6 @@ export default function LinksPage({ links: initialLinks }) {
           )}
         </main>
       </div>
-    </>
+    </Layout>
   );
 }
