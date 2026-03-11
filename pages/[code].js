@@ -7,9 +7,34 @@ import { getLink } from "../lib/store";
 const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
 
 /**
- * Resolve a short code from new ShortLink collection, falling back to the
+ * Returns true when the User-Agent belongs to a bot/crawler that should
+ * receive an immediate redirect (Discord embed crawler, other link-preview
+ * bots, search engines, etc.).
+ */
+const CRAWLER_UA_PATTERNS = [
+  "Discordbot",
+  "Twitterbot",
+  "facebookexternalhit",
+  "LinkedInBot",
+  "Slackbot",
+  "TelegramBot",
+  "WhatsApp",
+  "Googlebot",
+  "bingbot",
+  "DuckDuckBot",
+  "Applebot",
+];
+const CRAWLER_UA_RE = new RegExp(CRAWLER_UA_PATTERNS.join("|"), "i");
+
+function isCrawler(userAgent) {
+  if (!userAgent) return false;
+  return CRAWLER_UA_RE.test(userAgent);
+}
+
+/**
+ * Resolve a short code from the new ShortLink collection, falling back to the
  * legacy "dsc" collection for codes created before this update.
- * Returns { targetUrl, isPermanent, expiresAt, ownerDiscordId } or null.
+ * Returns { targetUrl, isPermanent, expiresAt, ownerDiscordId, loading } or null.
  */
 async function resolveCode(code) {
   await connectToDatabase();
@@ -45,8 +70,9 @@ async function resolveCode(code) {
   return null;
 }
 
-export async function getServerSideProps({ params, req, res }) {
+export async function getServerSideProps({ params, req }) {
   const { code } = params;
+  const userAgent = req.headers["user-agent"] || "";
 
   let resolved = null;
   try {
@@ -88,7 +114,18 @@ export async function getServerSideProps({ params, req, res }) {
     };
   }
 
-  // Supporters (loading: false) get an instant redirect; guests/free users see a loading screen
+  // Bots and crawlers (including Discord's embed bot) always get an immediate
+  // redirect so they resolve the real invite URL and generate correct embeds.
+  if (isCrawler(userAgent)) {
+    return {
+      redirect: {
+        destination: targetUrl,
+        permanent: false,
+      },
+    };
+  }
+
+  // Supporters (loading: false) get an instant redirect.
   if (!loading) {
     return {
       redirect: {
@@ -98,7 +135,7 @@ export async function getServerSideProps({ params, req, res }) {
     };
   }
 
-  // Guests and free users see a loading screen
+  // Guests and free users see a loading screen before being redirected.
   const delayMs = 1750;
   return {
     props: { targetUrl, delayMs },
