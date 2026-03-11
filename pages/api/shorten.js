@@ -36,7 +36,7 @@ function isValidDiscordUrl(url) {
  * Body: { url: string, domain?: string }
  * Response: { code: string, shortUrl: string }
  */
-export default function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -66,8 +66,8 @@ export default function handler(req, res) {
   }
 
   try {
-    const code = generateCode();
-    saveLink(code, url.trim());
+    const code = await generateCode();
+    await saveLink(code, url.trim());
 
     const shortUrl = `${baseUrl}/${code}`;
     return res.status(200).json({ code, shortUrl });
