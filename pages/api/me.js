@@ -1,7 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
-import { getUserTier, countUserLinks } from "../../lib/tiers";
-import { LIMITS } from "../../lib/tierConstants";
+import { getUserTier, countUserLinks, getUserLimits } from "../../lib/tiers";
 
 /**
  * GET /api/me – return current session and tier information
@@ -19,7 +18,7 @@ export default async function handler(req, res) {
   const { discordId, discordUsername, name, image } = session.user;
   const tier = await getUserTier(discordId);
   const counts = await countUserLinks(discordId);
-  const limits = LIMITS[tier];
+  const limits = await getUserLimits(discordId, tier);
 
   return res.status(200).json({
     loggedIn: true,

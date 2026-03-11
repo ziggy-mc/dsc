@@ -76,6 +76,9 @@ export default function AdminReportsPage({ initialReports }) {
           <Link href="/admin/accounts" className={styles.navLink}>
             Accounts
           </Link>
+          <Link href="/admin/refer" className={styles.navLink}>
+            Refer Codes
+          </Link>
         </nav>
 
         <main className={styles.main}>

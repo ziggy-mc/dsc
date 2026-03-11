@@ -87,6 +87,9 @@ export default function AdminAccountsPage({ initialUsers }) {
           <Link href="/admin/accounts" className={`${styles.navLink} ${styles.navLinkActive}`}>
             Accounts
           </Link>
+          <Link href="/admin/refer" className={styles.navLink}>
+            Refer Codes
+          </Link>
         </nav>
 
         <main className={styles.main}>

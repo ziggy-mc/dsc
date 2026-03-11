@@ -5,7 +5,7 @@ import Layout from "../components/Layout";
 import { CheckIcon, ClipboardIcon, CloseIcon } from "../components/Icons";
 import styles from "../styles/Home.module.css";
 
-/** The Vercel deployment domain that should redirect to the primary domain */
+
 const VERCEL_DOMAIN = "zmcdsc.vercel.app";
 
 /** The primary domain where the UI lives */
@@ -95,6 +95,195 @@ function extractInviteCode(inputUrl) {
 
 const DOMAINS_FREE = ["https://zmcdsc.vercel.app"];
 const DOMAINS_PAID = ["https://zmcdsc.vercel.app", "https://dscs.ziggymc.me"];
+
+const PERK_SUCCESS_MESSAGES = {
+  permLinks: (v) => `🎉 Perk applied! You now have ${v} extra permanent link slot${v !== 1 ? "s" : ""}.`,
+  tempLinks: (v) => `🎉 Perk applied! You now have ${v} extra temporary link slot${v !== 1 ? "s" : ""}.`,
+  noLoading: () => "🎉 Perk applied! The selected link will now redirect instantly.",
+};
+
+/** Modal that lets a user pick one of their links to disable the loading screen */
+function LinkPickerModal({ links, onSelect, onCancel, applying }) {
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalCard}>
+        <h2 className={styles.modalTitle}>Select a Link</h2>
+        <p className={styles.modalSubtitle}>
+          Choose which of your links should skip the loading/redirect screen and go straight to Discord.
+        </p>
+
+        <div className={styles.linkPickerList}>
+          {links.length === 0 ? (
+            <p className={styles.emptyPickerText}>
+              You have no links eligible for this perk (all links may already have instant redirect enabled).
+            </p>
+          ) : (
+            links.map((link) => (
+              <button
+                key={link.code}
+                className={styles.linkPickerItem}
+                onClick={() => onSelect(link.code)}
+                disabled={applying}
+              >
+                <span>
+                  <span className={styles.linkPickerCode}>{link.shortUrl}</span>
+                  <br />
+                  <span className={styles.linkPickerUrl}>{link.targetUrl}</span>
+                </span>
+                <span className={styles.linkPickerExpiry}>
+                  {link.isPermanent ? "Permanent" : link.expiresAt ? `Expires ${new Date(link.expiresAt).toLocaleDateString()}` : ""}
+                </span>
+              </button>
+            ))
+          )}
+        </div>
+
+        <button
+          className={styles.modalCancelButton}
+          onClick={onCancel}
+          disabled={applying}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Referral code redemption section shown at the bottom of the card for logged-in users */
+function ReferralSection({ onRefreshTier }) {
+  const [open, setOpen] = useState(false);
+  const [code, setCode] = useState("");
+  const [redeeming, setRedeeming] = useState(false);
+  const [redeemError, setRedeemError] = useState("");
+  const [redeemSuccess, setRedeemSuccess] = useState("");
+
+  // noLoading link-picker state
+  const [pickerLinks, setPickerLinks] = useState(null); // null = not open
+  const [pendingCode, setPendingCode] = useState("");
+  const [applying, setApplying] = useState(false);
+
+  const handleRedeem = async () => {
+    if (!code.trim()) return;
+    setRedeemError("");
+    setRedeemSuccess("");
+    setRedeeming(true);
+
+    try {
+      const res = await fetch("/api/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: code.trim() }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setRedeemError(data.error || "Failed to redeem code.");
+      } else if (data.needsLinkSelect) {
+        // noLoading perk – open the link picker
+        setPickerLinks(data.links);
+        setPendingCode(code.trim());
+      } else {
+        const msg =
+          (PERK_SUCCESS_MESSAGES[data.perkType] || (() => "Perk applied!"))(data.perkValue);
+        setRedeemSuccess(msg);
+        setCode("");
+        onRefreshTier();
+      }
+    } catch {
+      setRedeemError("Network error. Please try again.");
+    } finally {
+      setRedeeming(false);
+    }
+  };
+
+  const handleSelectLink = async (linkCode) => {
+    setApplying(true);
+    setRedeemError("");
+
+    try {
+      const res = await fetch("/api/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: pendingCode, selectedLinkCode: linkCode }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setRedeemError(data.error || "Failed to apply perk.");
+      } else {
+        setRedeemSuccess(PERK_SUCCESS_MESSAGES.noLoading());
+        setCode("");
+        setPickerLinks(null);
+        setPendingCode("");
+        onRefreshTier();
+      }
+    } catch {
+      setRedeemError("Network error. Please try again.");
+    } finally {
+      setApplying(false);
+    }
+  };
+
+  const handleCancelPicker = () => {
+    setPickerLinks(null);
+    setPendingCode("");
+  };
+
+  return (
+    <>
+      {pickerLinks !== null && (
+        <LinkPickerModal
+          links={pickerLinks}
+          onSelect={handleSelectLink}
+          onCancel={handleCancelPicker}
+          applying={applying}
+        />
+      )}
+
+      <div className={styles.referralSection}>
+        <button
+          className={styles.referralToggle}
+          onClick={() => {
+            setOpen((o) => !o);
+            setRedeemError("");
+            setRedeemSuccess("");
+          }}
+          aria-expanded={open}
+        >
+          <span className={`${styles.referralToggleIcon} ${open ? styles.referralToggleIconOpen : ""}`}>▶</span>
+          Have a referral code?
+        </button>
+
+        {open && (
+          <>
+            <div className={styles.referralForm}>
+              <input
+                type="text"
+                className={styles.referralInput}
+                placeholder="Enter your referral code"
+                value={code}
+                onChange={(e) => { setCode(e.target.value); setRedeemError(""); setRedeemSuccess(""); }}
+                onKeyDown={(e) => { if (e.key === "Enter") handleRedeem(); }}
+                autoComplete="off"
+                spellCheck={false}
+              />
+              <button
+                className={styles.referralButton}
+                onClick={handleRedeem}
+                disabled={redeeming || !code.trim()}
+              >
+                {redeeming ? "…" : "Redeem"}
+              </button>
+            </div>
+            {redeemError && <div className={styles.referralError}>{redeemError}</div>}
+            {redeemSuccess && <div className={styles.referralSuccess}>{redeemSuccess}</div>}
+          </>
+        )}
+      </div>
+    </>
+  );
+}
 
 export default function Home({ initialError }) {
   const { data: session, status } = useSession();
@@ -419,6 +608,16 @@ export default function Home({ initialError }) {
                 {copied ? <><CheckIcon width={14} height={14} style={{ verticalAlign: "middle", marginRight: "3px" }} /> Copied</> : "Copy"}
               </button>
             </div>
+          )}
+          {/* ── Referral Code ── */}
+          {!isGuest && (
+            <ReferralSection
+              onRefreshTier={() =>
+                fetch("/api/me")
+                  .then((r) => r.json())
+                  .then((d) => setTierInfo(d))
+              }
+            />
           )}
         </div>
       </main>
