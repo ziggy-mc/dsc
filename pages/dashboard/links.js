@@ -6,6 +6,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { connectToDatabase } from "../../lib/mongodb";
 import ShortLink from "../../models/ShortLink";
 import Layout from "../../components/Layout";
+import { HomeIcon, LinkIcon, ScissorsIcon, InfinityIcon } from "../../components/Icons";
 import styles from "../../styles/Dashboard.module.css";
 
 export async function getServerSideProps({ req, res }) {
@@ -86,13 +87,13 @@ export default function LinksPage({ links: initialLinks }) {
             <span className={styles.sidebarBrandText}>Dashboard</span>
           </div>
           <Link href="/dashboard" className={styles.navLink}>
-            🏠 Overview
+            <HomeIcon /> Overview
           </Link>
           <Link href="/dashboard/links" className={`${styles.navLink} ${styles.navLinkActive}`}>
-            🔗 My Links
+            <LinkIcon /> My Links
           </Link>
           <Link href="/" className={styles.navLink}>
-            ✂️ Create Link
+            <ScissorsIcon /> Create Link
           </Link>
         </nav>
 
@@ -168,7 +169,7 @@ export default function LinksPage({ links: initialLinks }) {
                       </td>
                       <td>
                         {link.isPermanent
-                          ? "∞"
+                          ? <InfinityIcon width={16} height={16} style={{ verticalAlign: "middle" }} />
                           : timeRemaining(link.expiresAt)}
                       </td>
                       <td>
