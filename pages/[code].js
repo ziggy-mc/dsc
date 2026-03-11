@@ -172,7 +172,7 @@ export default function RedirectPage({ targetUrl, delayMs }) {
             Redirecting you to Discord{dots}
           </p>
           <p style={{ color: "var(--text-muted)", fontSize: "0.82rem" }}>
-            You&apos;ll be taken there in a moment.
+            You&apos;ll be redirected in a moment.
           </p>
           <p style={{ color: "var(--text-muted)", fontSize: "0.78rem", marginTop: "1rem" }}>
             If you would like to create your own discord short links, create them here:{" "}
