@@ -29,6 +29,7 @@ export async function getServerSideProps({ req, res }) {
     targetUrl: l.targetUrl,
     domain: l.domain,
     isPermanent: l.isPermanent,
+    count: l.count ?? 0,
     createdAt: l.createdAt ? l.createdAt.toISOString() : null,
     expiresAt: l.expiresAt ? l.expiresAt.toISOString() : null,
     expired:
@@ -126,6 +127,7 @@ export default function LinksPage({ links: initialLinks }) {
                   <tr>
                     <th>Short URL</th>
                     <th>Destination</th>
+                    <th>Opens</th>
                     <th>Created</th>
                     <th>Expiration</th>
                     <th>Time Remaining</th>
@@ -155,6 +157,7 @@ export default function LinksPage({ links: initialLinks }) {
                             : link.targetUrl}
                         </span>
                       </td>
+                      <td>{link.count}</td>
                       <td>
                         {link.createdAt
                           ? new Date(link.createdAt).toLocaleDateString()
