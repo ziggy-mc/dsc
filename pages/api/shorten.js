@@ -120,13 +120,24 @@ export default async function handler(req, res) {
   }
 
   // Resolve short code
+  /** Routes that must not be used as short codes */
+  const RESERVED_SLUGS = new Set([
+    "api", "dashboard", "_next", "favicon.ico", "404", "500",
+  ]);
+
   let code;
   if (customSlug && tier === TIERS.PAID) {
-    const slug = customSlug.trim().replace(/[^a-zA-Z0-9_-]/g, "");
-    if (slug.length < 2 || slug.length > 32) {
+    // Normalize to lowercase and strip invalid characters
+    const slug = customSlug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+    if (!slug || slug.length < 2 || slug.length > 32) {
       return res.status(400).json({
         error:
           "Custom slug must be between 2 and 32 characters (letters, numbers, hyphens, underscores).",
+      });
+    }
+    if (RESERVED_SLUGS.has(slug)) {
+      return res.status(400).json({
+        error: "That slug is reserved and cannot be used. Please choose another.",
       });
     }
     await connectToDatabase();
@@ -151,6 +162,15 @@ export default async function handler(req, res) {
       expiresAt,
       isPermanent,
     });
+
+    // Increment the user's total links created counter
+    if (discordId) {
+      const User = (await import("../../models/User")).default;
+      await User.updateOne(
+        { discordId },
+        { $inc: { "shortener.totalLinksCreated": 1 } }
+      );
+    }
 
     const shortUrl = `${baseUrl}/${code}`;
     return res.status(200).json({ code, shortUrl });

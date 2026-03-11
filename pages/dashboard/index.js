@@ -110,7 +110,7 @@ export default function DashboardHome({ user, tier, counts, limits }) {
             <div className={styles.upgradeNotice}>
               <p>
                 <strong>Want more?</strong> Become a Supporter to unlock 10
-                links, custom slugs, 6-month expiry, and more domains.
+                links, custom slugs, 180-day expiry, and more domains.
               </p>
             </div>
           )}

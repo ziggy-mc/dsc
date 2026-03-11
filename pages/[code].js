@@ -75,8 +75,8 @@ export async function getServerSideProps({ params, req, res }) {
     // Clean up expired link
     try {
       await ShortLink.deleteOne({ code });
-    } catch {
-      // Non-fatal
+    } catch (delErr) {
+      console.error("Failed to delete expired link:", delErr);
     }
     return {
       redirect: {

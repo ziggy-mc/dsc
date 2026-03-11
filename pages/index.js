@@ -397,10 +397,10 @@ export default function Home({ initialError }) {
 
           {/* ── Custom Slug (paid only, blurred + disabled for free) ── */}
           <div className={styles.inputGroup}>
-            <label className={styles.domainLabel} style={{ display: "block", marginBottom: "0.4rem" }}>
+            <label className={styles.slugLabel}>
               Custom slug{" "}
               {!isPaid && (
-                <span className={styles.badgePaid} style={{ fontSize: "0.72rem" }}>
+                <span className={styles.badgePaid}>
                   Supporter only
                 </span>
               )}
