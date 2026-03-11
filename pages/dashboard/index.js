@@ -5,6 +5,7 @@ import { authOptions } from "../api/auth/[...nextauth]";
 import { getUserTier, countUserLinks } from "../../lib/tiers";
 import { LIMITS, TIERS } from "../../lib/tierConstants";
 import Layout from "../../components/Layout";
+import { HomeIcon, LinkIcon, ScissorsIcon, InfinityIcon } from "../../components/Icons";
 import styles from "../../styles/Dashboard.module.css";
 
 export async function getServerSideProps({ req, res }) {
@@ -45,13 +46,13 @@ export default function DashboardHome({ user, tier, counts, limits }) {
             <span className={styles.sidebarBrandText}>Dashboard</span>
           </div>
           <Link href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
-            🏠 Overview
+            <HomeIcon /> Overview
           </Link>
           <Link href="/dashboard/links" className={styles.navLink}>
-            🔗 My Links
+            <LinkIcon /> My Links
           </Link>
           <Link href="/" className={styles.navLink}>
-            ✂️ Create Link
+            <ScissorsIcon /> Create Link
           </Link>
         </nav>
 
@@ -78,14 +79,14 @@ export default function DashboardHome({ user, tier, counts, limits }) {
               <p className={styles.statLabel}>Total Links</p>
               <p className={styles.statValue}>
                 {counts.total}
-                <span className={styles.statMax}> / {limits.total === Infinity ? "∞" : limits.total}</span>
+                <span className={styles.statMax}> / {limits.total === Infinity ? <InfinityIcon width={16} height={16} style={{ verticalAlign: "middle" }} /> : limits.total}</span>
               </p>
             </div>
             <div className={styles.statCard}>
               <p className={styles.statLabel}>Temp Links</p>
               <p className={styles.statValue}>
                 {counts.temp}
-                <span className={styles.statMax}> / {limits.temp === Infinity ? "∞" : limits.temp}</span>
+                <span className={styles.statMax}> / {limits.temp === Infinity ? <InfinityIcon width={16} height={16} style={{ verticalAlign: "middle" }} /> : limits.temp}</span>
               </p>
             </div>
             <div className={styles.statCard}>
@@ -99,10 +100,10 @@ export default function DashboardHome({ user, tier, counts, limits }) {
 
           <div className={styles.actions}>
             <Link href="/" className={styles.actionButton}>
-              ✂️ Create a new short link
+              <ScissorsIcon /> Create a new short link
             </Link>
             <Link href="/dashboard/links" className={styles.actionButtonOutline}>
-              🔗 Manage my links
+              <LinkIcon /> Manage my links
             </Link>
           </div>
 

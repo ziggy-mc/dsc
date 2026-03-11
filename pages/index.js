@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useSession, signIn } from "next-auth/react";
 import Layout from "../components/Layout";
+import { CheckIcon, ClipboardIcon, CloseIcon } from "../components/Icons";
 import styles from "../styles/Home.module.css";
 
 /** The Vercel deployment domain that should redirect to the primary domain */
@@ -60,7 +61,7 @@ function ErrorNotification({ message, onClose }) {
         onClick={onClose}
         aria-label="Dismiss error"
       >
-        ✕
+        <CloseIcon width={14} height={14} />
       </button>
     </div>
   );
@@ -184,7 +185,7 @@ export default function Home({ initialError }) {
         setError(data.error || "Something went wrong. Please try again.");
       } else {
         setShortLink(data.shortUrl);
-        showToast("✅ Short link created!");
+        showToast(<><CheckIcon width={14} height={14} style={{ verticalAlign: "middle", marginRight: "4px" }} /> Short link created!</>);
         // Refresh tier info to update link counts
         fetch("/api/me")
           .then((r) => r.json())
@@ -205,7 +206,7 @@ export default function Home({ initialError }) {
     if (!shortLink) return;
     navigator.clipboard.writeText(shortLink).then(() => {
       setCopied(true);
-      showToast("📋 Copied to clipboard!");
+      showToast(<><ClipboardIcon width={14} height={14} style={{ verticalAlign: "middle", marginRight: "4px" }} /> Copied to clipboard!</>);
       setTimeout(() => setCopied(false), 2000);
     });
   };
@@ -413,7 +414,7 @@ export default function Home({ initialError }) {
                 }`}
                 aria-label="Copy short link"
               >
-                {copied ? "✓ Copied" : "Copy"}
+                {copied ? <><CheckIcon width={14} height={14} style={{ verticalAlign: "middle", marginRight: "3px" }} /> Copied</> : "Copy"}
               </button>
             </div>
           )}
