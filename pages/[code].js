@@ -5,12 +5,12 @@ import { getLink } from "../lib/store";
  * Looks up the short code in the store and redirects to the original Discord invite URL.
  * Returns a 404 page if the code is not found.
  */
-export async function getServerSideProps({ params }) {
+export function getServerSideProps({ params }) {
   const { code } = params;
 
   let url = null;
   try {
-    url = await getLink(code);
+    url = getLink(code);
   } catch (err) {
     console.error("Failed to look up short code:", err);
     return { notFound: true };

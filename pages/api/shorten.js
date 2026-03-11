@@ -1,5 +1,11 @@
 import { saveLink, generateCode } from "../../lib/store";
 
+/** Allowed short domains the user can choose from */
+const ALLOWED_DOMAINS = [
+  "https://zmcdsc.vercel.app",
+  "https://dscs.ziggymc.me",
+];
+
 /**
  * Validate that the given URL is a Discord invite link.
  * Accepts: discord.gg/<code> and discord.com/invite/<code>
@@ -27,15 +33,15 @@ function isValidDiscordUrl(url) {
 
 /**
  * POST /api/shorten
- * Body: { url: string }
+ * Body: { url: string, domain?: string }
  * Response: { code: string, shortUrl: string }
  */
-export default async function handler(req, res) {
+export default function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { url } = req.body || {};
+  const { url, domain } = req.body || {};
 
   if (!url || typeof url !== "string") {
     return res.status(400).json({ error: "URL is required" });
@@ -48,15 +54,22 @@ export default async function handler(req, res) {
     });
   }
 
-  try {
-    const code = await generateCode();
-    await saveLink(code, url.trim());
-
-    // Build short URL from the request host header
+  // Use the provided domain if it's in the allow-list, otherwise fall back to
+  // the request host so the app also works on localhost / custom deployments.
+  let baseUrl;
+  if (domain && ALLOWED_DOMAINS.includes(domain)) {
+    baseUrl = domain;
+  } else {
     const protocol = req.headers["x-forwarded-proto"] || "http";
     const host = req.headers.host;
-    const shortUrl = `${protocol}://${host}/${code}`;
+    baseUrl = `${protocol}://${host}`;
+  }
 
+  try {
+    const code = generateCode();
+    saveLink(code, url.trim());
+
+    const shortUrl = `${baseUrl}/${code}`;
     return res.status(200).json({ code, shortUrl });
   } catch (err) {
     console.error("Failed to shorten link:", err);
