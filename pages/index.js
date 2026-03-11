@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
+import Link from "next/link";
+import { useSession, signIn, signOut } from "next-auth/react";
 import styles from "../styles/Home.module.css";
 
 /** The Vercel deployment domain that should redirect to the primary domain */
@@ -7,12 +9,6 @@ const VERCEL_DOMAIN = "zmcdsc.vercel.app";
 
 /** The primary domain where the UI lives */
 const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
-
-/** Short domains the user can choose from */
-const DOMAINS = [
-  "https://zmcdsc.vercel.app",
-  "https://dscs.ziggymc.me",
-];
 
 /**
  * Redirect visitors on the Vercel domain to the primary domain, and pass
@@ -31,20 +27,22 @@ export function getServerSideProps({ req, query }) {
     };
   }
 
-  // Propagate error state from [code].js redirects
   const initialError =
-    query.error === "notfound" ? "Short URL doesn't exist" : null;
+    query.error === "notfound"
+      ? "Short URL doesn't exist"
+      : query.error === "expired"
+      ? "This short link has expired."
+      : null;
 
   return {
     props: { initialError },
   };
 }
 
-/** Error notification box shown when a short code could not be resolved */
+/** Error notification box */
 function ErrorNotification({ message, onClose }) {
   return (
     <div className={styles.errorNotification} role="alert">
-      {/* Semi-transparent background icon */}
       <svg
         className={styles.errorNotificationBgIcon}
         xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +66,7 @@ function ErrorNotification({ message, onClose }) {
   );
 }
 
-/** Discord logo SVG (official brand asset) */
+/** Discord logo SVG */
 function DiscordIcon() {
   return (
     <svg
@@ -86,12 +84,12 @@ function DiscordIcon() {
   );
 }
 
-/** Spinner shown inside the button while a request is in-flight */
+/** Spinner */
 function Spinner() {
   return <span className={styles.spinner} aria-label="Loading" />;
 }
 
-/** Extract the invite code segment from a Discord URL for the preview badge */
+/** Extract invite code from a Discord URL for preview */
 function extractInviteCode(inputUrl) {
   try {
     const parsed = new URL(inputUrl);
@@ -105,14 +103,21 @@ function extractInviteCode(inputUrl) {
       return parsed.pathname.replace("/invite/", "");
     }
   } catch {
-    // Not a valid URL yet — that's fine while the user is still typing
+    // Not a valid URL yet
   }
   return "";
 }
 
+const DOMAINS_FREE = ["https://zmcdsc.vercel.app"];
+const DOMAINS_PAID = ["https://zmcdsc.vercel.app", "https://dscs.ziggymc.me"];
+
 export default function Home({ initialError }) {
+  const { data: session, status } = useSession();
+
   const [url, setUrl] = useState("");
-  const [domain, setDomain] = useState(DOMAINS[0]);
+  const [domain, setDomain] = useState(DOMAINS_FREE[0]);
+  const [expiresInDays, setExpiresInDays] = useState("7");
+  const [customSlug, setCustomSlug] = useState("");
   const [shortLink, setShortLink] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
@@ -121,13 +126,46 @@ export default function Home({ initialError }) {
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState("");
 
-  /** Show a temporary toast notification */
+  // Per-user tier info fetched from /api/me
+  const [tierInfo, setTierInfo] = useState(null);
+
+  useEffect(() => {
+    if (status !== "loading") {
+      fetch("/api/me")
+        .then((r) => r.json())
+        .then((data) => setTierInfo(data))
+        .catch(() => setTierInfo({ loggedIn: false, tier: "guest" }));
+    }
+  }, [status, session]);
+
+  const tier = tierInfo?.tier || "guest";
+  const isGuest = tier === "guest";
+  const isFree = tier === "free";
+  const isPaid = tier === "paid";
+
+  const availableDomains = isPaid ? DOMAINS_PAID : DOMAINS_FREE;
+
+  const expiryOptions = isPaid
+    ? [
+        { label: "7 days", value: "7" },
+        { label: "30 days", value: "30" },
+        { label: "90 days", value: "90" },
+        { label: "180 days", value: "180" },
+        { label: "Permanent", value: "permanent" },
+      ]
+    : isFree
+    ? [
+        { label: "7 days", value: "7" },
+        { label: "30 days", value: "30" },
+        { label: "90 days", value: "90" },
+      ]
+    : [{ label: "7 days (guest limit)", value: "7" }];
+
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(""), 3000);
   };
 
-  /** Update URL state and live-extract the invite code for preview */
   const handleUrlChange = (e) => {
     const value = e.target.value;
     setUrl(value);
@@ -136,7 +174,6 @@ export default function Home({ initialError }) {
     setInviteCode(extractInviteCode(value));
   };
 
-  /** Submit the URL to the API and store the returned short link */
   const handleShorten = async () => {
     if (!url) return;
     setError("");
@@ -144,10 +181,19 @@ export default function Home({ initialError }) {
     setLoading(true);
 
     try {
+      const body = {
+        url: url.trim(),
+        domain,
+        expiresInDays: expiresInDays === "permanent" ? null : Number(expiresInDays),
+      };
+      if (isPaid && customSlug.trim()) {
+        body.customSlug = customSlug.trim();
+      }
+
       const res = await fetch("/api/shorten", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim(), domain }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -157,6 +203,10 @@ export default function Home({ initialError }) {
       } else {
         setShortLink(data.shortUrl);
         showToast("✅ Short link created!");
+        // Refresh tier info to update link counts
+        fetch("/api/me")
+          .then((r) => r.json())
+          .then((d) => setTierInfo(d));
       }
     } catch {
       setError("Network error. Please check your connection and try again.");
@@ -165,12 +215,10 @@ export default function Home({ initialError }) {
     }
   };
 
-  /** Allow submitting with the Enter key */
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleShorten();
   };
 
-  /** Copy the short link to the clipboard */
   const handleCopy = () => {
     if (!shortLink) return;
     navigator.clipboard.writeText(shortLink).then(() => {
@@ -200,9 +248,79 @@ export default function Home({ initialError }) {
             <h1 className={styles.title}>Discord Invite Shortener</h1>
           </div>
 
+          {/* ── Auth Bar ── */}
+          <div className={styles.authBar}>
+            {status === "loading" ? null : session ? (
+              <div className={styles.authUser}>
+                {session.user?.image && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={session.user.image}
+                    alt=""
+                    className={styles.authAvatar}
+                  />
+                )}
+                <span className={styles.authName}>
+                  {session.user?.name}
+                  {isPaid && (
+                    <span className={styles.badgePaid}>⚡ Supporter</span>
+                  )}
+                  {isFree && (
+                    <span className={styles.badgeFree}>Free</span>
+                  )}
+                </span>
+                <div className={styles.authLinks}>
+                  <Link href="/dashboard" className={styles.authLink}>
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => signOut()}
+                    className={styles.authSignOut}
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => signIn("discord")}
+                className={styles.loginButton}
+              >
+                <DiscordIcon />
+                Login with Discord
+              </button>
+            )}
+          </div>
+
           <p className={styles.subtitle}>
             Paste a Discord invite link below to generate a short, shareable URL.
           </p>
+
+          {/* ── Guest notice ── */}
+          {isGuest && (
+            <div className={styles.guestNotice} role="note">
+              Guest links expire after 7 days.{" "}
+              <button
+                onClick={() => signIn("discord")}
+                className={styles.guestNoticeLink}
+              >
+                Log in
+              </button>{" "}
+              for more options.
+            </div>
+          )}
+
+          {/* ── Free user link counts ── */}
+          {(isFree || isPaid) && tierInfo?.counts && (
+            <div className={styles.tierInfo}>
+              <span>
+                Links: {tierInfo.counts.total} / {tierInfo.limits.total}
+              </span>
+              <span>
+                Permanent: {tierInfo.counts.permanent} / {tierInfo.limits.permanent}
+              </span>
+            </div>
+          )}
 
           {/* ── Not-Found Error Notification ── */}
           {notFoundError && (
@@ -226,7 +344,6 @@ export default function Home({ initialError }) {
               spellCheck={false}
             />
 
-            {/* Live invite-code preview badge */}
             {inviteCode && (
               <div className={styles.preview}>
                 <span className={styles.previewLabel}>Detected invite:</span>
@@ -235,24 +352,70 @@ export default function Home({ initialError }) {
             )}
           </div>
 
-          {/* ── Domain Selector ── */}
+          {/* ── Domain Selector (paid only) ── */}
+          {isPaid && (
+            <div className={styles.domainGroup}>
+              <label htmlFor="domain-select" className={styles.domainLabel}>
+                Short domain
+              </label>
+              <select
+                id="domain-select"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                className={styles.domainSelect}
+                aria-label="Choose short domain"
+              >
+                {availableDomains.map((d) => (
+                  <option key={d} value={d}>
+                    {d.replace("https://", "")}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* ── Expiration Selector ── */}
           <div className={styles.domainGroup}>
-            <label htmlFor="domain-select" className={styles.domainLabel}>
-              Short domain
+            <label htmlFor="expiry-select" className={styles.domainLabel}>
+              Expires
             </label>
             <select
-              id="domain-select"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
+              id="expiry-select"
+              value={expiresInDays}
+              onChange={(e) => setExpiresInDays(e.target.value)}
               className={styles.domainSelect}
-              aria-label="Choose short domain"
+              disabled={isGuest}
+              aria-label="Choose expiration"
             >
-              {DOMAINS.map((d) => (
-                <option key={d} value={d}>
-                  {d.replace("https://", "")}
+              {expiryOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* ── Custom Slug (paid only, blurred + disabled for free) ── */}
+          <div className={styles.inputGroup}>
+            <label className={styles.slugLabel}>
+              Custom slug{" "}
+              {!isPaid && (
+                <span className={styles.badgePaid}>
+                  Supporter only
+                </span>
+              )}
+            </label>
+            <input
+              type="text"
+              value={isPaid ? customSlug : ""}
+              onChange={isPaid ? (e) => setCustomSlug(e.target.value) : undefined}
+              placeholder={isPaid ? "my-custom-slug (optional)" : "upgrade to customize"}
+              className={`${styles.input} ${!isPaid ? styles.inputBlurred : ""}`}
+              aria-label="Custom slug"
+              disabled={!isPaid}
+              autoComplete="off"
+              spellCheck={false}
+            />
           </div>
 
           {/* ── Error Message ── */}
@@ -296,7 +459,7 @@ export default function Home({ initialError }) {
         </div>
       </main>
 
-      {/* ── Toast Notification ── */}
+      {/* ── Toast ── */}
       {toast && (
         <div className={styles.toast} role="status" aria-live="polite">
           {toast}
