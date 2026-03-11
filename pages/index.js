@@ -33,6 +33,8 @@ export function getServerSideProps({ req, query }) {
       ? "Short URL doesn't exist"
       : query.error === "expired"
       ? "This short link has expired."
+      : query.error === "suspended"
+      ? "Your account has been suspended."
       : null;
 
   return {
