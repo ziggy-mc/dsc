@@ -51,7 +51,7 @@ export const authOptions = {
               "shortener.totalLinksCreated": 0,
             },
           },
-          { upsert: true, new: true }
+          { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
         );
         if (user && user.suspended) {
           return "/?error=suspended";
