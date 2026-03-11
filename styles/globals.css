@@ -2,16 +2,22 @@
 :root {
   --bg-from: #0f0f13;
   --bg-to: #1a1b2e;
-  --surface: #2f3136;
-  --surface-alt: #202225;
-  --border: #40444b;
+  --surface: #1e1f24;
+  --surface-alt: #16171b;
+  --surface-hover: #252629;
+  --border: #3a3d44;
   --blurple: #5865f2;
   --blurple-hover: #4752c4;
-  --green: #43b581;
+  --green: #3ba55c;
+  --green-alt: #43b581;
   --red: #ed4245;
-  --text-primary: #ffffff;
+  --yellow: #f59e0b;
+  --text-primary: #f2f3f5;
   --text-secondary: #b9bbbe;
   --text-muted: #72767d;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
 }
 
 *,

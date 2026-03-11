@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Head from "next/head";
-import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
+import Layout from "../components/Layout";
 import styles from "../styles/Home.module.css";
 
 /** The Vercel deployment domain that should redirect to the primary domain */
@@ -63,24 +63,6 @@ function ErrorNotification({ message, onClose }) {
         ✕
       </button>
     </div>
-  );
-}
-
-/** Discord logo SVG */
-function DiscordIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 127.14 96.36"
-      width="36"
-      height="36"
-      aria-hidden="true"
-    >
-      <path
-        fill="#5865F2"
-        d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"
-      />
-    </svg>
   );
 }
 
@@ -229,7 +211,7 @@ export default function Home({ initialError }) {
   };
 
   return (
-    <>
+    <Layout>
       <Head>
         <title>Discord Invite Shortener</title>
         <meta
@@ -242,56 +224,7 @@ export default function Home({ initialError }) {
 
       <main className={styles.main}>
         <div className={styles.card}>
-          {/* ── Header ── */}
-          <div className={styles.header}>
-            <DiscordIcon />
-            <h1 className={styles.title}>Discord Invite Shortener</h1>
-          </div>
-
-          {/* ── Auth Bar ── */}
-          <div className={styles.authBar}>
-            {status === "loading" ? null : session ? (
-              <div className={styles.authUser}>
-                {session.user?.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={session.user.image}
-                    alt=""
-                    className={styles.authAvatar}
-                  />
-                )}
-                <span className={styles.authName}>
-                  {session.user?.name}
-                  {isPaid && (
-                    <span className={styles.badgePaid}>⚡ Supporter</span>
-                  )}
-                  {isFree && (
-                    <span className={styles.badgeFree}>Free</span>
-                  )}
-                </span>
-                <div className={styles.authLinks}>
-                  <Link href="/dashboard" className={styles.authLink}>
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={() => signOut()}
-                    className={styles.authSignOut}
-                  >
-                    Sign out
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <button
-                onClick={() => signIn("discord")}
-                className={styles.loginButton}
-              >
-                <DiscordIcon />
-                Login with Discord
-              </button>
-            )}
-          </div>
-
+          <h1 className={styles.title}>Shorten your invite</h1>
           <p className={styles.subtitle}>
             Paste a Discord invite link below to generate a short, shareable URL.
           </p>
@@ -304,13 +237,13 @@ export default function Home({ initialError }) {
                 onClick={() => signIn("discord")}
                 className={styles.guestNoticeLink}
               >
-                Log in
+                Log in with Discord
               </button>{" "}
               for more options.
             </div>
           )}
 
-          {/* ── Free user link counts ── */}
+          {/* ── Link usage counts ── */}
           {(isFree || isPaid) && tierInfo?.counts && (
             <div className={styles.tierInfo}>
               <span>
@@ -332,7 +265,11 @@ export default function Home({ initialError }) {
 
           {/* ── URL Input ── */}
           <div className={styles.inputGroup}>
+            <label className={styles.fieldLabel} htmlFor="invite-url">
+              Discord Invite URL
+            </label>
             <input
+              id="invite-url"
               type="url"
               value={url}
               onChange={handleUrlChange}
@@ -352,12 +289,31 @@ export default function Home({ initialError }) {
             )}
           </div>
 
-          {/* ── Domain Selector (paid only) ── */}
-          {isPaid && (
-            <div className={styles.domainGroup}>
-              <label htmlFor="domain-select" className={styles.domainLabel}>
-                Short domain
-              </label>
+          {/* ── Domain Selector ── */}
+          <div className={styles.domainGroup}>
+            <label className={styles.fieldLabel} htmlFor="domain-select">
+              Short domain
+            </label>
+            {!isPaid ? (
+              <>
+                <select
+                  id="domain-select"
+                  value={domain}
+                  className={styles.domainSelect}
+                  disabled
+                  aria-label="Choose short domain"
+                >
+                  {DOMAINS_FREE.map((d) => (
+                    <option key={d} value={d}>
+                      {d.replace("https://", "")}
+                    </option>
+                  ))}
+                </select>
+                <p className={styles.fieldHelper}>
+                  Custom domains are available for Supporter accounts.
+                </p>
+              </>
+            ) : (
               <select
                 id="domain-select"
                 value={domain}
@@ -371,13 +327,13 @@ export default function Home({ initialError }) {
                   </option>
                 ))}
               </select>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* ── Expiration Selector ── */}
           <div className={styles.domainGroup}>
-            <label htmlFor="expiry-select" className={styles.domainLabel}>
-              Expires
+            <label className={styles.fieldLabel} htmlFor="expiry-select">
+              Expiration
             </label>
             <select
               id="expiry-select"
@@ -393,17 +349,17 @@ export default function Home({ initialError }) {
                 </option>
               ))}
             </select>
+            {isGuest && (
+              <p className={styles.fieldHelper}>
+                Log in to choose a longer expiration period.
+              </p>
+            )}
           </div>
 
-          {/* ── Custom Slug (paid only, blurred + disabled for free) ── */}
+          {/* ── Custom Slug ── */}
           <div className={styles.inputGroup}>
-            <label className={styles.slugLabel}>
-              Custom slug{" "}
-              {!isPaid && (
-                <span className={styles.badgePaid}>
-                  Supporter only
-                </span>
-              )}
+            <label className={styles.fieldLabel}>
+              Custom slug
             </label>
             <input
               type="text"
@@ -416,6 +372,11 @@ export default function Home({ initialError }) {
               autoComplete="off"
               spellCheck={false}
             />
+            {!isPaid && (
+              <p className={styles.fieldHelper}>
+                Custom slugs are available for Supporter accounts only.
+              </p>
+            )}
           </div>
 
           {/* ── Error Message ── */}
@@ -465,9 +426,6 @@ export default function Home({ initialError }) {
           {toast}
         </div>
       )}
-
-      {/* ── Footer ── */}
-      <footer className={styles.footer}>Service provided by ziggymc</footer>
-    </>
+    </Layout>
   );
 }
