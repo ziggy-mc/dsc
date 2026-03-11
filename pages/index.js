@@ -2,6 +2,12 @@ import { useState } from "react";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 
+/** Short domains the user can choose from */
+const DOMAINS = [
+  "https://zmcdsc.vercel.app",
+  "https://dscs.ziggymc.me",
+];
+
 /** Discord logo SVG (official brand asset) */
 function DiscordIcon() {
   return (
@@ -46,6 +52,7 @@ function extractInviteCode(inputUrl) {
 
 export default function Home() {
   const [url, setUrl] = useState("");
+  const [domain, setDomain] = useState(DOMAINS[0]);
   const [shortLink, setShortLink] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
@@ -79,7 +86,7 @@ export default function Home() {
       const res = await fetch("/api/shorten", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: url.trim(), domain }),
       });
 
       const data = await res.json();
@@ -159,6 +166,26 @@ export default function Home() {
             )}
           </div>
 
+          {/* ── Domain Selector ── */}
+          <div className={styles.domainGroup}>
+            <label htmlFor="domain-select" className={styles.domainLabel}>
+              Short domain
+            </label>
+            <select
+              id="domain-select"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              className={styles.domainSelect}
+              aria-label="Choose short domain"
+            >
+              {DOMAINS.map((d) => (
+                <option key={d} value={d}>
+                  {d.replace("https://", "")}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* ── Error Message ── */}
           {error && (
             <div className={styles.error} role="alert">
@@ -208,7 +235,7 @@ export default function Home() {
       )}
 
       {/* ── Footer ── */}
-      <footer className={styles.footer}>Discord Invite Shortener</footer>
+      <footer className={styles.footer}>Service provided by ziggymc</footer>
     </>
   );
 }

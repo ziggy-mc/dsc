@@ -1,6 +1,7 @@
 /* Discord dark-theme colour palette */
 :root {
-  --bg: #1a1b1e;
+  --bg-from: #0f0f13;
+  --bg-to: #1a1b2e;
   --surface: #2f3136;
   --surface-alt: #202225;
   --border: #40444b;
@@ -26,10 +27,28 @@ body {
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background: var(--bg);
+  /* Professional gradient background */
+  background: linear-gradient(135deg, var(--bg-from) 0%, var(--bg-to) 100%);
+  background-attachment: fixed;
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Page-load fade-in */
+#__next {
+  animation: pageFadeIn 0.45s ease both;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 a {
