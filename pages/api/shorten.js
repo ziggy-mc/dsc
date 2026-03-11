@@ -3,7 +3,7 @@ import { authOptions } from "./auth/[...nextauth]";
 import { connectToDatabase } from "../../lib/mongodb";
 import ShortLink from "../../models/ShortLink";
 import { generateCode } from "../../lib/store";
-import { getUserTier, countUserLinks } from "../../lib/tiers";
+import { getUserTier, countUserLinks, getUserLimits } from "../../lib/tiers";
 import {
   TIERS,
   LIMITS,
@@ -98,7 +98,7 @@ export default async function handler(req, res) {
   // Check per-user link limits (logged-in users only)
   if (tier !== TIERS.GUEST) {
     const counts = await countUserLinks(discordId);
-    const limits = LIMITS[tier];
+    const limits = await getUserLimits(discordId, tier);
 
     if (counts.total >= limits.total) {
       return res.status(403).json({

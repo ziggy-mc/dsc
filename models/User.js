@@ -60,6 +60,18 @@ const userSchema = new mongoose.Schema(
       },
     },
 
+    // Extra link-slot grants from referral codes
+    referralPerks: {
+      extraPermLinks: {
+        type: Number,
+        default: 0,
+      },
+      extraTempLinks: {
+        type: Number,
+        default: 0,
+      },
+    },
+
     suspended: {
       type: Boolean,
       default: false,
