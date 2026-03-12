@@ -92,6 +92,19 @@ export default function AdminAccountsPage({ initialUsers }) {
           </Link>
         </nav>
 
+        {/* Mobile nav (shown on small screens instead of sidebar) */}
+        <nav className={styles.mobileNav}>
+          <Link href="/admin/reports" className={styles.navLink}>
+            Reports
+          </Link>
+          <Link href="/admin/accounts" className={`${styles.navLink} ${styles.navLinkActive}`}>
+            Accounts
+          </Link>
+          <Link href="/admin/refer" className={styles.navLink}>
+            Refer Codes
+          </Link>
+        </nav>
+
         <main className={styles.main}>
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>Accounts</h1>

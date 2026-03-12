@@ -2,8 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { getUserTier, countUserLinks } from "../../lib/tiers";
-import { LIMITS, TIERS } from "../../lib/tierConstants";
+import { getUserTier, countUserLinks, getUserLimits } from "../../lib/tiers";
+import { TIERS } from "../../lib/tierConstants";
 import Layout from "../../components/Layout";
 import { HomeIcon, LinkIcon, ScissorsIcon, InfinityIcon } from "../../components/Icons";
 import styles from "../../styles/Dashboard.module.css";
@@ -17,7 +17,7 @@ export async function getServerSideProps({ req, res }) {
   const { discordId, discordUsername, name, image } = session.user;
   const tier = await getUserTier(discordId);
   const counts = await countUserLinks(discordId);
-  const limits = LIMITS[tier];
+  const limits = await getUserLimits(discordId, tier);
 
   return {
     props: {
@@ -45,6 +45,19 @@ export default function DashboardHome({ user, tier, counts, limits }) {
           <div className={styles.sidebarBrand}>
             <span className={styles.sidebarBrandText}>Dashboard</span>
           </div>
+          <Link href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
+            <HomeIcon /> Overview
+          </Link>
+          <Link href="/dashboard/links" className={styles.navLink}>
+            <LinkIcon /> My Links
+          </Link>
+          <Link href="/" className={styles.navLink}>
+            <ScissorsIcon /> Create Link
+          </Link>
+        </nav>
+
+        {/* Mobile nav (shown on small screens instead of sidebar) */}
+        <nav className={styles.mobileNav}>
           <Link href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
             <HomeIcon /> Overview
           </Link>

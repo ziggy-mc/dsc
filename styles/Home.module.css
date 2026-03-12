@@ -393,6 +393,7 @@
 
 .tierInfo {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
   padding: 0.5rem 0.9rem;
   background: rgba(255, 255, 255, 0.025);

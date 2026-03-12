@@ -496,9 +496,27 @@
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
+.mobileNav {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
   .sidebar {
     display: none;
+  }
+
+  .mobileNav {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    background: rgba(21, 22, 26, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
   }
 
   .main {

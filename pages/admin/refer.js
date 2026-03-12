@@ -140,6 +140,22 @@ export default function AdminReferPage({ initialCodes }) {
           </Link>
         </nav>
 
+        {/* Mobile nav (shown on small screens instead of sidebar) */}
+        <nav className={styles.mobileNav}>
+          <Link href="/admin/reports" className={styles.navLink}>
+            Reports
+          </Link>
+          <Link href="/admin/accounts" className={styles.navLink}>
+            Accounts
+          </Link>
+          <Link
+            href="/admin/refer"
+            className={`${styles.navLink} ${styles.navLinkActive}`}
+          >
+            Refer Codes
+          </Link>
+        </nav>
+
         <main className={styles.main}>
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>Referral Codes</h1>
