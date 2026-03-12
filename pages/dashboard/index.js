@@ -2,8 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
-import { getUserTier, countUserLinks } from "../../lib/tiers";
-import { LIMITS, TIERS } from "../../lib/tierConstants";
+import { getUserTier, countUserLinks, getUserLimits } from "../../lib/tiers";
+import { TIERS } from "../../lib/tierConstants";
 import Layout from "../../components/Layout";
 import { HomeIcon, LinkIcon, ScissorsIcon, InfinityIcon } from "../../components/Icons";
 import styles from "../../styles/Dashboard.module.css";
@@ -17,7 +17,7 @@ export async function getServerSideProps({ req, res }) {
   const { discordId, discordUsername, name, image } = session.user;
   const tier = await getUserTier(discordId);
   const counts = await countUserLinks(discordId);
-  const limits = LIMITS[tier];
+  const limits = await getUserLimits(discordId, tier);
 
   return {
     props: {
