@@ -20,12 +20,15 @@ export async function getServerSideProps({ req, res }) {
 
   await connectToDatabase();
 
-  const [totalUsers, paidUsers, totalLinks, permLinks] = await Promise.all([
+  const [totalUsers, paidUsers, totalLinks, permLinks, clicksResult] = await Promise.all([
     User.countDocuments(),
     Supporter.countDocuments(),
     ShortLink.countDocuments(),
     ShortLink.countDocuments({ isPermanent: true }),
+    ShortLink.aggregate([{ $group: { _id: null, total: { $sum: "$count" } } }]),
   ]);
+
+  const totalClicks = clicksResult[0]?.total || 0;
 
   return {
     props: {
@@ -36,6 +39,7 @@ export async function getServerSideProps({ req, res }) {
         totalLinks,
         permLinks,
         tempLinks: totalLinks - permLinks,
+        totalClicks,
       },
     },
   };
@@ -121,6 +125,14 @@ export default function AdminOverviewPage({ stats }) {
             <div className={styles.statCard}>
               <div className={styles.statValue}>{stats.totalLinks}</div>
               <div className={styles.statLabel}>Total Links</div>
+            </div>
+          </div>
+
+          <h2 className={styles.sectionHeading}>Engagement</h2>
+          <div className={styles.statsGrid}>
+            <div className={styles.statCard}>
+              <div className={styles.statValue}>{stats.totalClicks.toLocaleString()}</div>
+              <div className={styles.statLabel}>Total Clicks</div>
             </div>
           </div>
         </main>

@@ -212,12 +212,13 @@ export default function AdminLinksPage({ initialLinks, filterDiscordId, filterUs
                         <td className={styles.monoCell}>
                           {link.domain}/{link.code}
                         </td>
-                        <td>
+                        <td className={styles.reasonCell}>
                           <a
                             href={link.targetUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.linkCell}
+                            title={link.targetUrl}
                           >
                             {link.targetUrl}
                           </a>
@@ -280,10 +281,6 @@ export default function AdminLinksPage({ initialLinks, filterDiscordId, filterUs
               </table>
             </div>
           )}
-
-          <p className={styles.disclaimer}>
-            We reserve the right to remove any/all inappropriate Discord links.
-          </p>
         </main>
       </div>
     </Layout>

@@ -204,6 +204,10 @@ export default function LinksPage({ links: initialLinks }) {
               </table>
             </div>
           )}
+
+          <p className={styles.disclaimer}>
+            We reserve the right to remove any/all inappropriate Discord links.
+          </p>
         </main>
       </div>
     </Layout>
