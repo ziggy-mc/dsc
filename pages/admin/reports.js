@@ -160,7 +160,11 @@ export default function AdminReportsPage({ initialReports }) {
                             rel="noopener noreferrer"
                             className={styles.imageLink}
                           >
-                            View
+                            <img
+                              src={report.imageUrl}
+                              alt="Report screenshot"
+                              className={styles.reportImageThumb}
+                            />
                           </a>
                         ) : (
                           <span className={styles.noImage}>—</span>

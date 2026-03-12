@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./api/auth/[...nextauth]";
@@ -27,9 +27,19 @@ export default function ReportPage({ user }) {
   const [reportedLink, setReportedLink] = useState("");
   const [reason, setReason] = useState("");
   const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Revoke the object URL when it changes or when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,36 +75,28 @@ export default function ReportPage({ user }) {
       return;
     }
 
+    if (imageFile) {
+      const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+      if (imageFile.size > MAX_IMAGE_BYTES) {
+        setError("Image must be 4 MB or smaller.");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
-      let imageUrl = null;
-
-      // Convert image to base64 data URL if provided (max 4 MB)
+      const formData = new FormData();
+      formData.append("reportedLink", reportedLink.trim());
+      formData.append("shortCode", shortCode);
+      formData.append("reason", reason.trim());
       if (imageFile) {
-        const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
-        if (imageFile.size > MAX_IMAGE_BYTES) {
-          setError("Image must be 4 MB or smaller.");
-          setLoading(false);
-          return;
-        }
-        imageUrl = await new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => reject(new Error("Failed to read image file."));
-          reader.readAsDataURL(imageFile);
-        });
+        formData.append("image", imageFile);
       }
 
       const res = await fetch("/api/report", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          reportedLink: reportedLink.trim(),
-          shortCode,
-          reason: reason.trim(),
-          imageUrl,
-        }),
+        body: formData,
       });
 
       const data = await res.json();
@@ -106,6 +108,7 @@ export default function ReportPage({ user }) {
         setReportedLink("");
         setReason("");
         setImageFile(null);
+        setImagePreview(null);
       }
     } catch {
       setError("Network error. Please check your connection and try again.");
@@ -197,9 +200,20 @@ export default function ReportPage({ user }) {
                 id="image-upload"
                 type="file"
                 accept="image/*"
-                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setImageFile(file);
+                  setImagePreview(file ? URL.createObjectURL(file) : null);
+                }}
                 className={styles.fileInput}
               />
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className={styles.imagePreview}
+                />
+              )}
             </div>
 
             {error && (
