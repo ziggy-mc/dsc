@@ -70,6 +70,12 @@ export default function AdminReportsPage({ initialReports }) {
       <div className={styles.layout}>
         <nav className={styles.sidebar}>
           <div className={styles.sidebarBrand}>Admin Panel</div>
+          <Link href="/admin" className={styles.navLink}>
+            Overview
+          </Link>
+          <Link href="/admin/links" className={styles.navLink}>
+            Links
+          </Link>
           <Link href="/admin/reports" className={`${styles.navLink} ${styles.navLinkActive}`}>
             Reports
           </Link>
@@ -83,6 +89,12 @@ export default function AdminReportsPage({ initialReports }) {
 
         {/* Mobile nav (shown on small screens instead of sidebar) */}
         <nav className={styles.mobileNav}>
+          <Link href="/admin" className={styles.navLink}>
+            Overview
+          </Link>
+          <Link href="/admin/links" className={styles.navLink}>
+            Links
+          </Link>
           <Link href="/admin/reports" className={`${styles.navLink} ${styles.navLinkActive}`}>
             Reports
           </Link>
