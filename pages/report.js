@@ -5,7 +5,7 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import Layout from "../components/Layout";
 import styles from "../styles/Report.module.css";
 
-const ALLOWED_DOMAINS = ["zmcdsc.vercel.app", "dscs.ziggymc.me"];
+const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me"];
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions);
@@ -70,19 +70,20 @@ export default function ReportPage({ user }) {
     try {
       let imageUrl = null;
 
-      // Upload image if provided (base64 via FormData)
+      // Convert image to base64 data URL if provided (max 4 MB)
       if (imageFile) {
-        const formData = new FormData();
-        formData.append("image", imageFile);
-        const uploadRes = await fetch("/api/report/upload", {
-          method: "POST",
-          body: formData,
-        });
-        if (uploadRes.ok) {
-          const uploadData = await uploadRes.json();
-          imageUrl = uploadData.url;
+        const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+        if (imageFile.size > MAX_IMAGE_BYTES) {
+          setError("Image must be 4 MB or smaller.");
+          setLoading(false);
+          return;
         }
-        // If upload fails, proceed without image
+        imageUrl = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error("Failed to read image file."));
+          reader.readAsDataURL(imageFile);
+        });
       }
 
       const res = await fetch("/api/report", {
@@ -162,7 +163,7 @@ export default function ReportPage({ user }) {
                   setReportedLink(e.target.value);
                   setError("");
                 }}
-                placeholder={`https://dscs.ziggymc.me/abc123`}
+                placeholder={`https://ds.ziggymc.me/abc123`}
                 className={styles.input}
                 required
               />
@@ -190,7 +191,7 @@ export default function ReportPage({ user }) {
             {/* Optional image */}
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel} htmlFor="image-upload">
-                Supporting image (optional)
+                Supporting image (optional, max 4 MB)
               </label>
               <input
                 id="image-upload"
