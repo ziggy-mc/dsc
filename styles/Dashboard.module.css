@@ -374,6 +374,16 @@
   cursor: not-allowed;
 }
 
+/* ── Disclaimer ──────────────────────────────────────────────────────────── */
+
+.disclaimer {
+  margin-top: 2rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+}
+
 /* ── userInfo alias (used by old header layout) ──────────────────────────── */
 
 .userInfo {
