@@ -56,6 +56,19 @@ export default function DashboardHome({ user, tier, counts, limits }) {
           </Link>
         </nav>
 
+        {/* Mobile nav (shown on small screens instead of sidebar) */}
+        <nav className={styles.mobileNav}>
+          <Link href="/dashboard" className={`${styles.navLink} ${styles.navLinkActive}`}>
+            <HomeIcon /> Overview
+          </Link>
+          <Link href="/dashboard/links" className={styles.navLink}>
+            <LinkIcon /> My Links
+          </Link>
+          <Link href="/" className={styles.navLink}>
+            <ScissorsIcon /> Create Link
+          </Link>
+        </nav>
+
         {/* Main */}
         <main className={styles.main}>
           {/* Account overview card */}

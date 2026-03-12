@@ -98,6 +98,19 @@ export default function LinksPage({ links: initialLinks }) {
           </Link>
         </nav>
 
+        {/* Mobile nav (shown on small screens instead of sidebar) */}
+        <nav className={styles.mobileNav}>
+          <Link href="/dashboard" className={styles.navLink}>
+            <HomeIcon /> Overview
+          </Link>
+          <Link href="/dashboard/links" className={`${styles.navLink} ${styles.navLinkActive}`}>
+            <LinkIcon /> My Links
+          </Link>
+          <Link href="/" className={styles.navLink}>
+            <ScissorsIcon /> Create Link
+          </Link>
+        </nav>
+
         {/* Main */}
         <main className={styles.main}>
           <div className={styles.pageHeader}>

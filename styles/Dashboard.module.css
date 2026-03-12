@@ -382,6 +382,12 @@
   gap: 1rem;
 }
 
+/* ── Mobile nav (replaces sidebar on small screens) ──────────────────────── */
+
+.mobileNav {
+  display: none;
+}
+
 /* ── Animations ──────────────────────────────────────────────────────────── */
 
 @keyframes fadeInUp {
@@ -392,8 +398,22 @@
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
   .sidebar {
     display: none;
+  }
+
+  .mobileNav {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    background: rgba(21, 22, 26, 0.85);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
   }
 
   .main {
@@ -405,6 +425,18 @@
   }
 }
 
+@media (max-width: 600px) {
+  /* Hide lower-priority table columns on small screens */
+  .table th:nth-child(3),
+  .table td:nth-child(3),
+  .table th:nth-child(4),
+  .table td:nth-child(4),
+  .table th:nth-child(5),
+  .table td:nth-child(5) {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .statsGrid {
     grid-template-columns: 1fr;
@@ -412,5 +444,15 @@
 
   .accountCard {
     padding: 1.25rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actionButton,
+  .actionButtonOutline {
+    width: 100%;
+    justify-content: center;
   }
 }

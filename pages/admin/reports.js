@@ -81,6 +81,19 @@ export default function AdminReportsPage({ initialReports }) {
           </Link>
         </nav>
 
+        {/* Mobile nav (shown on small screens instead of sidebar) */}
+        <nav className={styles.mobileNav}>
+          <Link href="/admin/reports" className={`${styles.navLink} ${styles.navLinkActive}`}>
+            Reports
+          </Link>
+          <Link href="/admin/accounts" className={styles.navLink}>
+            Accounts
+          </Link>
+          <Link href="/admin/refer" className={styles.navLink}>
+            Refer Codes
+          </Link>
+        </nav>
+
         <main className={styles.main}>
           <div className={styles.pageHeader}>
             <h1 className={styles.pageTitle}>Reports</h1>

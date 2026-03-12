@@ -183,6 +183,10 @@
     font-size: 0.875rem;
   }
 
+  .navLink {
+    display: none;
+  }
+
   .navUserName {
     display: none;
   }
