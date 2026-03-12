@@ -3,7 +3,15 @@ import { authOptions } from "../auth/[...nextauth]";
 import { connectToDatabase } from "../../../lib/mongodb";
 import DSReport from "../../../models/DSReport";
 
-const ALLOWED_DOMAINS = ["zmcdsc.vercel.app", "dscs.ziggymc.me"];
+const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me"];
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "6mb",
+    },
+  },
+};
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
