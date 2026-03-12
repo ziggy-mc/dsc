@@ -35,17 +35,42 @@ function isCrawler(userAgent) {
  * Resolve a short code from the new ShortLink collection, falling back to the
  * legacy "dsc" collection for codes created before this update.
  * Returns { targetUrl, isPermanent, expiresAt, ownerDiscordId, loading } or null.
+ *
+ * @param {string} code - The short code to resolve.
+ * @param {string} requestHostname - The hostname of the incoming request (without port),
+ *   used to validate that the link belongs to the domain being accessed.
  */
-async function resolveCode(code) {
+async function resolveCode(code, requestHostname) {
   await connectToDatabase();
 
-  // Check new ShortLink model first (and increment the open counter)
-  const sl = await ShortLink.findOneAndUpdate(
-    { code },
-    { $inc: { count: 1 } },
-    { new: true, lean: true }
-  );
+  // Find the ShortLink without updating yet so we can validate domain first.
+  const sl = await ShortLink.findOne({ code }).lean();
   if (sl) {
+    // Domain check: the link's stored domain must match the host that the
+    // visitor is using.  Legacy docs without a domain field bypass this check.
+    if (requestHostname && sl.domain) {
+      let storedHostname = null;
+      try {
+        // Domains are stored as full URLs (e.g. "https://dscs.ziggymc.me").
+        // Guard against bare hostnames that may have been stored without a
+        // protocol by prepending one if needed.
+        const raw = sl.domain.includes("://") ? sl.domain : `https://${sl.domain}`;
+        storedHostname = new URL(raw).hostname;
+      } catch {
+        // If parsing fails for any reason, fall through and allow the
+        // request rather than incorrectly blocking it.
+        storedHostname = null;
+      }
+      if (storedHostname !== null && storedHostname !== requestHostname) {
+        // The slug exists but was created for a different domain – treat as
+        // not found so we don't leak information about other domains' links.
+        return null;
+      }
+    }
+
+    // Increment the visit counter only after the domain check passes.
+    await ShortLink.updateOne({ code }, { $inc: { count: 1 } });
+
     return {
       targetUrl: sl.targetUrl,
       isPermanent: sl.isPermanent,
@@ -55,7 +80,7 @@ async function resolveCode(code) {
     };
   }
 
-  // Fall back to legacy store
+  // Fall back to legacy store (no domain stored, so no domain check needed).
   const legacyUrl = await getLink(code);
   if (legacyUrl) {
     return {
@@ -74,9 +99,13 @@ export async function getServerSideProps({ params, req }) {
   const { code } = params;
   const userAgent = req.headers["user-agent"] || "";
 
+  // Extract just the hostname (no port) so we can validate it against the
+  // link's stored domain (e.g. "dscs.ziggymc.me" or "zmcdsc.vercel.app").
+  const requestHostname = (req.headers.host || "").split(":")[0];
+
   let resolved = null;
   try {
-    resolved = await resolveCode(code);
+    resolved = await resolveCode(code, requestHostname);
   } catch (err) {
     console.error("Failed to resolve short code:", err);
     return {
