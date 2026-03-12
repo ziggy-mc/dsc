@@ -43,7 +43,7 @@ export default function AdminAccountsPage({ initialUsers }) {
   const handleToggleSuspend = async (discordId, currentlySuspended) => {
     const action = currentlySuspended ? "unsuspend" : "suspend";
     setError("");
-    setLoadingId(discordId);
+    setLoadingId(`${discordId}:${action}`);
 
     try {
       const res = await fetch("/api/admin/accounts", {
@@ -71,6 +71,36 @@ export default function AdminAccountsPage({ initialUsers }) {
     }
   };
 
+  const handleDeleteAccount = async (discordId, username) => {
+    if (
+      !confirm(
+        `Delete account for ${username || discordId}?\n\nThis will disable their shortener and delete all their links. They can still re-register. This cannot be undone.`
+      )
+    )
+      return;
+    setError("");
+    setLoadingId(`${discordId}:delete`);
+
+    try {
+      const res = await fetch("/api/admin/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "deleteAccount", discordId }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Delete failed.");
+      } else {
+        setUsers((prev) => prev.filter((u) => u.discordId !== discordId));
+      }
+    } catch {
+      setError("Network error.");
+    } finally {
+      setLoadingId(null);
+    }
+  };
+
   return (
     <Layout>
       <Head>
@@ -81,6 +111,12 @@ export default function AdminAccountsPage({ initialUsers }) {
       <div className={styles.layout}>
         <nav className={styles.sidebar}>
           <div className={styles.sidebarBrand}>Admin Panel</div>
+          <Link href="/admin" className={styles.navLink}>
+            Overview
+          </Link>
+          <Link href="/admin/links" className={styles.navLink}>
+            Links
+          </Link>
           <Link href="/admin/reports" className={styles.navLink}>
             Reports
           </Link>
@@ -94,6 +130,12 @@ export default function AdminAccountsPage({ initialUsers }) {
 
         {/* Mobile nav (shown on small screens instead of sidebar) */}
         <nav className={styles.mobileNav}>
+          <Link href="/admin" className={styles.navLink}>
+            Overview
+          </Link>
+          <Link href="/admin/links" className={styles.navLink}>
+            Links
+          </Link>
           <Link href="/admin/reports" className={styles.navLink}>
             Reports
           </Link>
@@ -130,7 +172,7 @@ export default function AdminAccountsPage({ initialUsers }) {
                     <th>Discord ID</th>
                     <th>Account Created</th>
                     <th>Status</th>
-                    <th>Action</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -152,23 +194,32 @@ export default function AdminAccountsPage({ initialUsers }) {
                           {user.suspended ? "Suspended" : "Active"}
                         </span>
                       </td>
-                      <td>
+                      <td className={styles.actionsCell}>
                         <button
                           onClick={() =>
                             handleToggleSuspend(user.discordId, user.suspended)
                           }
-                          disabled={loadingId === user.discordId}
+                          disabled={!!loadingId}
                           className={
                             user.suspended
                               ? styles.unsuspendButton
                               : styles.suspendButton
                           }
                         >
-                          {loadingId === user.discordId
+                          {loadingId === `${user.discordId}:${user.suspended ? "unsuspend" : "suspend"}`
                             ? "…"
                             : user.suspended
                             ? "Unsuspend"
-                            : "Suspend Account"}
+                            : "Suspend"}
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDeleteAccount(user.discordId, user.discordUsername)
+                          }
+                          disabled={!!loadingId}
+                          className={styles.removeButton}
+                        >
+                          {loadingId === `${user.discordId}:delete` ? "…" : "Delete"}
                         </button>
                       </td>
                     </tr>

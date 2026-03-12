@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]";
 import { connectToDatabase } from "../../../lib/mongodb";
 import User from "../../../models/User";
+import ShortLink from "../../../models/ShortLink";
 
 const ADMIN_DISCORD_ID = "794228666518339604";
 
@@ -47,6 +48,21 @@ export default async function handler(req, res) {
       if (!updated) {
         return res.status(404).json({ error: "User not found." });
       }
+      return res.status(200).json({ success: true });
+    }
+
+    if (action === "deleteAccount") {
+      const user = await User.findOne({ discordId });
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+      // Delete all links belonging to this user
+      await ShortLink.deleteMany({ ownerDiscordId: discordId });
+      // Disable the shortener (keeps the account schema so they can re-register)
+      await User.findOneAndUpdate(
+        { discordId },
+        { $set: { "shortener.enabled": false } }
+      );
       return res.status(200).json({ success: true });
     }
 

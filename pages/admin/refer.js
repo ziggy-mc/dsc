@@ -126,6 +126,12 @@ export default function AdminReferPage({ initialCodes }) {
       <div className={styles.layout}>
         <nav className={styles.sidebar}>
           <div className={styles.sidebarBrand}>Admin Panel</div>
+          <Link href="/admin" className={styles.navLink}>
+            Overview
+          </Link>
+          <Link href="/admin/links" className={styles.navLink}>
+            Links
+          </Link>
           <Link href="/admin/reports" className={styles.navLink}>
             Reports
           </Link>
@@ -142,6 +148,12 @@ export default function AdminReferPage({ initialCodes }) {
 
         {/* Mobile nav (shown on small screens instead of sidebar) */}
         <nav className={styles.mobileNav}>
+          <Link href="/admin" className={styles.navLink}>
+            Overview
+          </Link>
+          <Link href="/admin/links" className={styles.navLink}>
+            Links
+          </Link>
           <Link href="/admin/reports" className={styles.navLink}>
             Reports
           </Link>
