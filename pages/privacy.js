@@ -40,7 +40,7 @@ export default function PrivacyPolicy() {
               <li>Discord user ID</li>
               <li>Discord username and discriminator</li>
               <li>Display name and avatar URL</li>
-              <li>Email address (if granted by OAuth scope)</li>
+              <li>Email address</li>
             </ul>
             <p className={styles.text}>
               This data is used solely to identify your account and determine your account tier.
