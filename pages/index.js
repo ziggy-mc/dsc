@@ -326,7 +326,7 @@ export default function Home({ initialError }) {
   const isFree = tier === "free";
   const isPaid = tier === "paid";
 
-  const availableDomains = isPaid ? DOMAINS_PAID : DOMAINS_FREE;
+  const availableDomains = isPaid ? [...DOMAINS_PAID, ...DOMAINS_FREE] : DOMAINS_FREE;
 
   // Reset domain to the first available option whenever the tier changes
   useEffect(() => {
