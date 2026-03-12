@@ -6,20 +6,29 @@ import { CheckIcon, ClipboardIcon, CloseIcon } from "../components/Icons";
 import styles from "../styles/Home.module.css";
 
 
-const VERCEL_DOMAIN = "zmcdsc.vercel.app";
-
 /** The primary domain where the UI lives */
-const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
+const PRIMARY_DOMAIN = "https://ds.ziggymc.me";
 
 /**
- * Redirect visitors on the Vercel domain to the primary domain, and pass
+ * Domains that serve short links (not the main UI) – visitors hitting their
+ * root path should be redirected to the primary domain instead.
+ */
+const SHORT_LINK_DOMAINS = [
+  "zmcdsc.vercel.app",
+  "dscs.ziggymc.me",
+  "invs.ziggymc.me",
+  "d.ziggymc.me",
+];
+
+/**
+ * Redirect visitors on short-link domains to the primary domain, and pass
  * through any error state from short-code resolution.
  */
 export function getServerSideProps({ req, query }) {
-  const host = req.headers.host;
+  const host = (req.headers.host || "").split(":")[0];
 
-  // Redirect bare visits to zmcdsc.vercel.app → primary domain
-  if (host === VERCEL_DOMAIN) {
+  // Redirect bare visits to short-link domains → primary UI domain
+  if (SHORT_LINK_DOMAINS.includes(host)) {
     return {
       redirect: {
         destination: PRIMARY_DOMAIN,
@@ -93,8 +102,8 @@ function extractInviteCode(inputUrl) {
   return "";
 }
 
-const DOMAINS_FREE = ["https://zmcdsc.vercel.app"];
-const DOMAINS_PAID = ["https://zmcdsc.vercel.app", "https://dscs.ziggymc.me"];
+const DOMAINS_FREE = ["https://dscs.ziggymc.me", "https://invs.ziggymc.me"];
+const DOMAINS_PAID = ["https://ds.ziggymc.me", "https://d.ziggymc.me"];
 
 const PERK_SUCCESS_MESSAGES = {
   permLinks: (v) => `🎉 Perk applied! You now have ${v} extra permanent link slot${v !== 1 ? "s" : ""}.`,
@@ -319,6 +328,11 @@ export default function Home({ initialError }) {
 
   const availableDomains = isPaid ? DOMAINS_PAID : DOMAINS_FREE;
 
+  // Reset domain to the first available option whenever the tier changes
+  useEffect(() => {
+    setDomain(tier === "paid" ? DOMAINS_PAID[0] : DOMAINS_FREE[0]);
+  }, [tier]);
+
   const expiryOptions = isPaid
     ? [
         { label: "7 days", value: "7" },
@@ -486,7 +500,7 @@ export default function Home({ initialError }) {
             <label className={styles.fieldLabel} htmlFor="domain-select">
               Short domain
             </label>
-            {!isPaid ? (
+            {isGuest ? (
               <>
                 <select
                   id="domain-select"
@@ -502,7 +516,7 @@ export default function Home({ initialError }) {
                   ))}
                 </select>
                 <p className={styles.fieldHelper}>
-                  Custom domains are available for Supporter accounts.
+                  Log in to choose your preferred short domain.
                 </p>
               </>
             ) : (

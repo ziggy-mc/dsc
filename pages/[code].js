@@ -4,7 +4,7 @@ import { connectToDatabase } from "../lib/mongodb";
 import ShortLink from "../models/ShortLink";
 import { getLink } from "../lib/store";
 
-const PRIMARY_DOMAIN = "https://dscs.ziggymc.me";
+const PRIMARY_DOMAIN = "https://ds.ziggymc.me";
 
 /**
  * Returns true when the User-Agent belongs to a bot/crawler that should
@@ -247,12 +247,12 @@ export default function RedirectPage({ targetUrl, delayMs }) {
           <p style={{ color: "var(--text-muted)", fontSize: "0.78rem", marginTop: "1rem" }}>
             If you would like to create your own discord short links, create them here:{" "}
             <a
-              href="https://dscs.ziggymc.me"
+              href="https://ds.ziggymc.me"
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: "#5865f2" }}
             >
-              https://dscs.ziggymc.me
+              https://ds.ziggymc.me
             </a>
           </p>
         </div>
