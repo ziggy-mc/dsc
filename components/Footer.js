@@ -6,8 +6,9 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <div className={styles.footerBrand}>
-          Discord Invite{" "}
-          <span className={styles.footerBrandAccent}>Shortener (zigybot https://ziggymc.me)</span>
+          Discord Invite Shortener
+          <br />
+          <span>(zigydbot https://ziggymc.me/zigydbot)</span>
         </div>
 
         <nav className={styles.footerNav}>
