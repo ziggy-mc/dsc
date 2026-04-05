@@ -14,7 +14,7 @@ const PRIMARY_DOMAIN = "https://ds.ziggymc.me";
  * root path should be redirected to the primary domain instead.
  */
 const SHORT_LINK_DOMAINS = [
-  "zmcdsc.vercel.app",
+  "ds.ziggymc.me",
   "dscs.ziggymc.me",
   "invs.ziggymc.me",
   "d.ziggymc.me",
@@ -102,7 +102,7 @@ function extractInviteCode(inputUrl) {
   return "";
 }
 
-const DOMAINS_FREE = ["https://dscs.ziggymc.me", "https://invs.ziggymc.me"];
+const DOMAINS_FREE = ["https://invs.ziggymc.me", "https://dscs.ziggymc.me"];
 const DOMAINS_PAID = ["https://ds.ziggymc.me", "https://d.ziggymc.me"];
 
 const PERK_SUCCESS_MESSAGES = {
