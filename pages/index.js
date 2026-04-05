@@ -334,19 +334,32 @@ export default function Home({ initialError }) {
     setDomain(tier === "paid" ? DOMAINS_PAID[0] : DOMAINS_FREE[0]);
   }, [tier]);
 
+  const canCreatePerm =
+    !isGuest &&
+    tierInfo?.limits?.permanent > 0 &&
+    (!tierInfo?.counts || tierInfo.counts.permanent < tierInfo.limits.permanent);
+
+  // Reset expiry selection when permanent is no longer an option (e.g. limit reached)
+  useEffect(() => {
+    if (expiresInDays === "permanent" && !canCreatePerm) {
+      setExpiresInDays("7");
+    }
+  }, [canCreatePerm, expiresInDays]);
+
   const expiryOptions = isPaid
     ? [
         { label: "7 days", value: "7" },
         { label: "30 days", value: "30" },
         { label: "90 days", value: "90" },
         { label: "180 days", value: "180" },
-        { label: "Permanent", value: "permanent" },
+        ...(canCreatePerm ? [{ label: "Permanent", value: "permanent" }] : []),
       ]
     : isFree
     ? [
         { label: "7 days", value: "7" },
         { label: "30 days", value: "30" },
         { label: "90 days", value: "90" },
+        ...(canCreatePerm ? [{ label: "Permanent", value: "permanent" }] : []),
       ]
     : [{ label: "7 days (guest limit)", value: "7" }];
 
