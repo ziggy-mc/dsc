@@ -12,9 +12,10 @@ const PRIMARY_DOMAIN = "https://ds.ziggymc.me";
 /**
  * Domains that serve short links (not the main UI) – visitors hitting their
  * root path should be redirected to the primary domain instead.
+ * NOTE: The primary domain (ds.ziggymc.me) must NOT appear here, otherwise
+ * visiting the homepage would redirect back to itself indefinitely.
  */
 const SHORT_LINK_DOMAINS = [
-  "ds.ziggymc.me",
   "dscs.ziggymc.me",
   "invs.ziggymc.me",
   "d.ziggymc.me",
