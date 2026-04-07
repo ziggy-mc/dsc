@@ -181,14 +181,43 @@ export default function RedirectPage({ targetUrl, delayMs }) {
       setDots((d) => (d.length >= 3 ? "." : d + "."));
     }, 500);
 
-    // Redirect after delay
+    // Redirect after delay — attempt the Discord app deep link first, then
+    // fall back to the web URL in case the app is not installed.
+    let fallbackTimeout = null;
+    const onVisibilityChange = () => {
+      // If the page is hidden the Discord app likely took focus — cancel the
+      // fallback so we don't also open the web invite page.
+      if (document.hidden && fallbackTimeout) {
+        clearTimeout(fallbackTimeout);
+        fallbackTimeout = null;
+      }
+    };
     const timeout = setTimeout(() => {
-      window.location.href = targetUrl;
+      const inviteMatch = targetUrl.match(
+        /discord(?:\.gg|\.com\/invite)\/([A-Za-z0-9_-]+)/i
+      );
+      if (inviteMatch) {
+        // Listen for the page being hidden so we can cancel the fallback if
+        // the Discord app successfully opens.
+        document.addEventListener("visibilitychange", onVisibilityChange);
+        // Try opening in the native Discord app.
+        window.location.href = `discord://discord.gg/${inviteMatch[1]}`;
+        // If the app didn't handle it (not installed), fall back to the web
+        // invite page after a short delay.
+        fallbackTimeout = setTimeout(() => {
+          document.removeEventListener("visibilitychange", onVisibilityChange);
+          window.location.href = targetUrl;
+        }, 1500);
+      } else {
+        window.location.href = targetUrl;
+      }
     }, delayMs);
 
     return () => {
       clearInterval(dotInterval);
       clearTimeout(timeout);
+      if (fallbackTimeout) clearTimeout(fallbackTimeout);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
     };
   }, [targetUrl, delayMs]);
 
