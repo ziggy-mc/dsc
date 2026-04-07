@@ -36,6 +36,29 @@ function isValidDiscordUrl(url) {
 }
 
 /**
+ * Normalize a Discord invite URL to always use the discord.gg/<code> form.
+ * discord.com/invite/<code> → https://discord.gg/<code>
+ * discord.gg/<code>        → returned as-is (scheme normalised to https)
+ */
+function normalizeDiscordUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === "discord.com" && parsed.pathname.startsWith("/invite/")) {
+      const slug = parsed.pathname.replace("/invite/", "");
+      return `https://discord.gg/${slug}`;
+    }
+    // Ensure https scheme for discord.gg links
+    if (parsed.hostname === "discord.gg") {
+      return `https://discord.gg${parsed.pathname}`;
+    }
+  } catch {
+    // Invalid URLs are already rejected by isValidDiscordUrl before this is called;
+    // fall through and return the original value unchanged.
+  }
+  return url;
+}
+
+/**
  * POST /api/shorten
  * Body: { url: string, domain?: string, expiresInDays?: number|null, customSlug?: string }
  * Response: { code: string, shortUrl: string }
@@ -156,7 +179,7 @@ export default async function handler(req, res) {
     await connectToDatabase();
     await ShortLink.create({
       code,
-      targetUrl: url.trim(),
+      targetUrl: normalizeDiscordUrl(url.trim()),
       ownerDiscordId: discordId,
       domain: baseUrl,
       expiresAt,
