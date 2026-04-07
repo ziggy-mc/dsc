@@ -183,16 +183,17 @@ export default function RedirectPage({ targetUrl, delayMs }) {
 
     // Redirect after delay — attempt the Discord app deep link first, then
     // fall back to the web URL in case the app is not installed.
+    let fallbackTimeout = null;
     const timeout = setTimeout(() => {
       const inviteMatch = targetUrl.match(
-        /discord(?:\.gg|\.com\/invite)\/([A-Za-z0-9-]+)/i
+        /discord(?:\.gg|\.com\/invite)\/([A-Za-z0-9_-]+)/i
       );
       if (inviteMatch) {
         // Try opening in the native Discord app.
         window.location.href = `discord://discord.gg/${inviteMatch[1]}`;
         // If the app didn't handle it (not installed), fall back to the web
         // invite page after a short delay.
-        setTimeout(() => {
+        fallbackTimeout = setTimeout(() => {
           window.location.href = targetUrl;
         }, 1500);
       } else {
@@ -203,6 +204,7 @@ export default function RedirectPage({ targetUrl, delayMs }) {
     return () => {
       clearInterval(dotInterval);
       clearTimeout(timeout);
+      if (fallbackTimeout) clearTimeout(fallbackTimeout);
     };
   }, [targetUrl, delayMs]);
 
