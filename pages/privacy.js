@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>1. Introduction</h2>
             <p className={styles.text}>
-              Discord Invite Shortener (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) is committed to protecting
+              DC Invs (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;) is committed to protecting
               your privacy. This Privacy Policy explains what information we collect, how we use it,
               and your rights regarding that information.
             </p>
@@ -56,6 +56,15 @@ export default function PrivacyPolicy() {
               <li>The creation timestamp and expiration date</li>
               <li>Your Discord user ID (to associate the link with your account)</li>
             </ul>
+            
+            <h3 className={styles.subTitle}>Links</h3>
+            <p className={styles.text}>
+              When you click a shortened link, we store:
+            </p>
+            <ul className={styles.list}>
+              <li>We store how many times the link has been clicked.</li>
+              <li>Anonymous Analytics</li>
+            </ul>
 
             <h3 className={styles.subTitle}>Request Logging</h3>
             <p className={styles.text}>
@@ -80,7 +89,7 @@ export default function PrivacyPolicy() {
             </ul>
             <p className={styles.text}>
               We do not sell your personal data to third parties. We do not use your data for
-              advertising purposes.
+              advertising purposes. Once a link expires, all data associated with it gets deleted.
             </p>
           </section>
 
