@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <div className={styles.footerBrand}>
-          Discord Invite Shortener
+          DC Invs
           <br />
           <span>({" "}
           <Link href="/zigydbot" className="underline decoration-white/30 underline-offset-4 transition-colors duration-300 hover:text-white/85">
