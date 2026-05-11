@@ -8,8 +8,8 @@ export default function Navbar() {
   return (
     <header className={styles.navbar}>
       <Link href="/" className={styles.navBrand}>
-        <span>Discord Invite</span>
-        <span className={styles.navBrandAccent}>Shortener</span>
+        <span>DC</span>
+        <span className={styles.navBrandAccent}>Invs</span>
       </Link>
 
       <nav className={styles.navRight}>
