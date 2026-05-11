@@ -62,7 +62,7 @@ export default function PrivacyPolicy() {
               When you click a shortened link, we store:
             </p>
             <ul className={styles.list}>
-              <li>We store how many times the link has been clicked.</li>
+              <li>We store how many times the link has been clicked</li>
               <li>Anonymous Analytics</li>
             </ul>
 
