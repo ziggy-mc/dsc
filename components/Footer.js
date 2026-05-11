@@ -8,7 +8,10 @@ export default function Footer() {
         <div className={styles.footerBrand}>
           Discord Invite Shortener
           <br />
-          <span>(zigydbot https://ziggymc.me/zigydbot)</span>
+          <span>({" "}
+          <Link href="/zigydbot" className="underline decoration-white/30 underline-offset-4 transition-colors duration-300 hover:text-white/85">
+            zigydbot
+          </Link>)</span>
         </div>
 
         <nav className={styles.footerNav}>
