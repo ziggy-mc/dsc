@@ -18,7 +18,7 @@ export default function TermsOfService() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>1. Acceptance of Terms</h2>
             <p className={styles.text}>
-              By accessing or using Discord Invite Shortener (&quot;the Service&quot;), you agree to
+              By accessing or using DC Invs (&quot;the Service&quot;), you agree to
               be bound by these Terms of Service. If you do not agree to these terms, please do not
               use the Service. We reserve the right to update these terms at any time, and continued
               use of the Service constitutes acceptance of any changes.
@@ -28,7 +28,7 @@ export default function TermsOfService() {
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>2. Description of Service</h2>
             <p className={styles.text}>
-              Discord Invite Shortener is a link shortening service designed specifically for Discord
+              DC Invs is a link shortening service designed specifically for Discord
               invite links. The Service allows users to create short, shareable URLs that redirect to
               Discord server invite pages. Users may create short links as guests or by authenticating
               with their Discord account.
