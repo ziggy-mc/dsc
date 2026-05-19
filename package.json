@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --test /home/runner/work/dsc/dsc/tests/*.test.cjs"
+    "test": "node --test tests/*.test.cjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.3.1",

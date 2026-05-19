@@ -6,7 +6,7 @@ const {
   extractSingleFile,
   isImageMimeType,
   sanitizeUploadFilename,
-} = require("/home/runner/work/dsc/dsc/lib/reportUploadUtils.cjs");
+} = require("../lib/reportUploadUtils.cjs");
 
 test("extractSingleFile supports array-shaped formidable files", () => {
   const file = { filepath: "/tmp/image.png" };

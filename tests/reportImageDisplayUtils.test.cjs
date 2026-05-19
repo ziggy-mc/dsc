@@ -2,7 +2,7 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { shouldShowImageThumbnail } = require("/home/runner/work/dsc/dsc/lib/reportImageDisplayUtils.cjs");
+const { shouldShowImageThumbnail } = require("../lib/reportImageDisplayUtils.cjs");
 
 test("shows thumbnail when imageUrl exists and has not failed", () => {
   assert.equal(shouldShowImageThumbnail("https://example.com/image.png", false), true);

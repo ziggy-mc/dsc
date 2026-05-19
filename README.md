@@ -1,5 +1,5 @@
 # dsc
-discord url shortner
+discord url shortener
 ps copilot helped me start, from now on I'll update the code
 
 ## Environment
