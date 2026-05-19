@@ -199,6 +199,7 @@ export default function ReportPage({ user }) {
               <input
                 id="image-upload"
                 type="file"
+                readOnly
                 accept="image/*"
                 onChange={(e) => {
                   const file = e.target.files?.[0] || null;
