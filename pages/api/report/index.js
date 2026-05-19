@@ -5,8 +5,14 @@ import DSReport from "../../../models/DSReport";
 import { put } from "@vercel/blob";
 import { formidable } from "formidable";
 import fs from "fs/promises";
+import reportUploadUtils from "../../../lib/reportUploadUtils.cjs";
 
 const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me"];
+const {
+  extractSingleFile,
+  isImageMimeType,
+  sanitizeUploadFilename,
+} = reportUploadUtils;
 
 export const config = {
   api: {
@@ -70,16 +76,24 @@ export default async function handler(req, res) {
   }
 
   let imageUrl = null;
-  const imageFile = files.image?.[0];
+  const imageFile = extractSingleFile(files.image);
 
   if (imageFile) {
+    if (!isImageMimeType(imageFile.mimetype)) {
+      return res.status(400).json({ error: "Uploaded file must be an image." });
+    }
+    if (!imageFile.filepath) {
+      return res.status(400).json({ error: "Uploaded image is invalid." });
+    }
+
     try {
       const buffer = await fs.readFile(imageFile.filepath);
-      const safeName = (imageFile.originalFilename || "image")
-        .replace(/[^a-zA-Z0-9._-]/g, "_")
-        .slice(0, 128);
+      const safeName = sanitizeUploadFilename(imageFile.originalFilename);
       const filename = `reports/${Date.now()}-${safeName}`;
-      const blob = await put(filename, buffer, { access: "public" });
+      const blob = await put(filename, buffer, {
+        access: "public",
+        contentType: imageFile.mimetype,
+      });
       imageUrl = blob.url;
     } catch (err) {
       console.error("Failed to upload image to Vercel Blob:", err);
@@ -112,4 +126,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Failed to save report." });
   }
 }
-
