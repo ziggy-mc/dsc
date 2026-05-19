@@ -7,8 +7,10 @@ import { connectToDatabase } from "../../lib/mongodb";
 import DSReport from "../../models/DSReport";
 import Layout from "../../components/Layout";
 import styles from "../../styles/Admin.module.css";
+import reportImageDisplayUtils from "../../lib/reportImageDisplayUtils.cjs";
 
 const ADMIN_DISCORD_ID = "794228666518339604";
+const { shouldShowImageThumbnail } = reportImageDisplayUtils;
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions);
@@ -35,6 +37,7 @@ export default function AdminReportsPage({ initialReports }) {
   const [reports, setReports] = useState(initialReports);
   const [loadingId, setLoadingId] = useState(null);
   const [error, setError] = useState("");
+  const [brokenImageIds, setBrokenImageIds] = useState({});
 
   const handleAction = async (reportId, action) => {
     setError("");
@@ -58,6 +61,10 @@ export default function AdminReportsPage({ initialReports }) {
     } finally {
       setLoadingId(null);
     }
+  };
+
+  const markImageBroken = (reportId) => {
+    setBrokenImageIds((prev) => ({ ...prev, [reportId]: true }));
   };
 
   return (
@@ -160,11 +167,16 @@ export default function AdminReportsPage({ initialReports }) {
                             rel="noopener noreferrer"
                             className={styles.imageLink}
                           >
-                            <img
-                              src={report.imageUrl}
-                              alt="Report screenshot"
-                              className={styles.reportImageThumb}
-                            />
+                            {shouldShowImageThumbnail(report.imageUrl, brokenImageIds[report._id]) ? (
+                              <img
+                                src={report.imageUrl}
+                                alt="Report screenshot"
+                                className={styles.reportImageThumb}
+                                onError={() => markImageBroken(report._id)}
+                              />
+                            ) : (
+                              "Open image"
+                            )}
                           </a>
                         ) : (
                           <span className={styles.noImage}>—</span>
