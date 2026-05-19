@@ -45,6 +45,8 @@ export function getServerSideProps({ req, query }) {
       ? "This short link has expired."
       : query.error === "suspended"
       ? "Your account has been suspended."
+      : query.error === "unauthenticated"
+      ? "You must be authenticated to complete this action."
       : null;
 
   return {
