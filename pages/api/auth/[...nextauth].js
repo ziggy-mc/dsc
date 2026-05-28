@@ -85,13 +85,43 @@ export const authOptions = {
         token.authMethod = "sso";
       }
 
+      if (token?.discordId) {
+        try {
+          await connectToDatabase();
+          const existingUser = await User.findOne({
+            discordId: token.discordId,
+            suspended: { $ne: true },
+          })
+            .select("discordUsername sessionVersion")
+            .lean();
+
+          if (!existingUser) {
+            token.invalidated = true;
+            delete token.discordId;
+            delete token.discordUsername;
+          } else {
+            token.invalidated = false;
+            token.discordUsername = existingUser.discordUsername;
+            token.sessionVersion = existingUser.sessionVersion || 0;
+          }
+        } catch (err) {
+          console.error("Failed to validate session token user:", err);
+        }
+      }
+
       return token;
     },
 
     async session({ session, token }) {
+      if (token?.invalidated || !token?.discordId) {
+        session.user = undefined;
+        return session;
+      }
+
       session.user.discordId = token.discordId;
       session.user.discordUsername = token.discordUsername;
       session.user.authMethod = token.authMethod;
+      session.user.sessionVersion = token.sessionVersion || 0;
       return session;
     },
 
