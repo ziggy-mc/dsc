@@ -12,6 +12,29 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      default: "",
+    },
+    email: {
+      type: String,
+      default: null,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+    avatarUrl: {
+      type: String,
+      default: null,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false,
+    },
 
     // BeatLeader connection
     beatleader: {
