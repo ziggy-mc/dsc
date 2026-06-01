@@ -206,7 +206,7 @@ export default function LinksPage({ links: initialLinks }) {
           )}
 
           <p className={styles.disclaimer}>
-            We reserve the right to remove any/all inappropriate Discord links.
+            We reserve the right to remove any/all Discord links.
           </p>
         </main>
       </div>
