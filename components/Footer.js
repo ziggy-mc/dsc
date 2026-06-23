@@ -9,8 +9,8 @@ export default function Footer() {
           DC Invs
           <br />
           <span>(
-          <Link href="https://www.ziggymc.me/zigydbot" className="underline decoration-white/30 underline-offset-4 transition-colors duration-300 hover:text-white/85">
-            zigydbot
+          <Link href="https://bugs.ziggymc.me/" className="underline decoration-white/30 underline-offset-4 transition-colors duration-300 hover:text-white/85">
+            muiwzi
           </Link>)</span>
         </div>
 
