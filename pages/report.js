@@ -5,7 +5,7 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import Layout from "../components/Layout";
 import styles from "../styles/Report.module.css";
 
-const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me". "go.ziggymc.me", "inv.ziggymc.me"];
+const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me", "go.ziggymc.me", "inv.ziggymc.me"];
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions);
@@ -171,7 +171,7 @@ export default function ReportPage({ user }) {
                 required
               />
               <p className={styles.fieldHelper}>
-                Only links from {ALLOWED_DOMAINS.join(" or ")} can be reported.
+                Only links from {ALLOWED_DOMAINS.join(" , ")} can be reported.
               </p>
             </div>
 
