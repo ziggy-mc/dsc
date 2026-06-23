@@ -13,7 +13,7 @@ export default function PrivacyPolicy() {
       <main className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.pageTitle}>Privacy Policy</h1>
-          <p className={styles.lastUpdated}>Last updated: March 2025</p>
+          <p className={styles.lastUpdated}>Last updated: June 2026</p>
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>1. Introduction</h2>
@@ -57,7 +57,7 @@ export default function PrivacyPolicy() {
               <li>Your Discord user ID (to associate the link with your account)</li>
             </ul>
             
-            <h3 className={styles.subTitle}>Links</h3>
+            <h3 className={styles.subTitle}>Opening a Shortened Likk</h3>
             <p className={styles.text}>
               When you click a shortened link, we store:
             </p>
