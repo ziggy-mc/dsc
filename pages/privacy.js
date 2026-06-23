@@ -57,7 +57,7 @@ export default function PrivacyPolicy() {
               <li>Your Discord user ID (to associate the link with your account)</li>
             </ul>
             
-            <h3 className={styles.subTitle}>Opening a Shortened Likk</h3>
+            <h3 className={styles.subTitle}>Opening a Shortened Link</h3>
             <p className={styles.text}>
               When you click a shortened link, we store:
             </p>
