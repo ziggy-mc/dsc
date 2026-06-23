@@ -171,7 +171,7 @@ export default function ReportPage({ user }) {
                 required
               />
               <p className={styles.fieldHelper}>
-                Only links from {ALLOWED_DOMAINS.join(" , ")} can be reported.
+                Only links from {ALLOWED_DOMAINS.join(", ")} can be reported.
               </p>
             </div>
 
