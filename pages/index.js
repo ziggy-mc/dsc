@@ -16,6 +16,8 @@ const PRIMARY_DOMAIN = "https://ds.ziggymc.me";
  * visiting the homepage would redirect back to itself indefinitely.
  */
 const SHORT_LINK_DOMAINS = [
+  "go.ziggymc.me",
+  "inv.ziggymc.me",
   "dscs.ziggymc.me",
   "invs.ziggymc.me",
   "d.ziggymc.me",
@@ -105,8 +107,8 @@ function extractInviteCode(inputUrl) {
   return "";
 }
 
-const DOMAINS_FREE = ["https://invs.ziggymc.me", "https://dscs.ziggymc.me"];
-const DOMAINS_PAID = ["https://ds.ziggymc.me", "https://d.ziggymc.me"];
+const DOMAINS_FREE = ["https://invs.ziggymc.me", "https://dscs.ziggymc.me", "https://inv.ziggymc.me"];
+const DOMAINS_PAID = ["https://ds.ziggymc.me", "https://go.ziggymc.me", "https://d.ziggymc.me"];
 
 const PERK_SUCCESS_MESSAGES = {
   permLinks: (v) => `🎉 Perk applied! You now have ${v} extra permanent link slot${v !== 1 ? "s" : ""}.`,
