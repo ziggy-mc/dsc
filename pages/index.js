@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import Head from "next/head";
 import { useSession, signIn } from "next-auth/react";
 import Layout from "../components/Layout";
@@ -301,6 +302,37 @@ function ReferralSection({ onRefreshTier }) {
 
 export default function Home({ initialError }) {
   const { data: session, status } = useSession();
+  
+  const router = useRouter();
+
+  const [notFoundError, setNotFoundError] = useState(initialError || "");
+
+  useEffect(() => {
+
+    const error =
+
+      router.query.error === "notfound"
+
+        ? "Short URL doesn't exist"
+
+        : router.query.error === "expired"
+
+        ? "This short link has expired."
+
+        : router.query.error === "suspended"
+
+        ? "Your account has been suspended."
+
+        : router.query.error === "unauthenticated"
+
+        ? "You must be authenticated to complete this action."
+
+        : "";
+
+    setNotFoundError(error);
+
+  }, [router.query.error]);
+
 
   const [url, setUrl] = useState("");
   const [domain, setDomain] = useState(DOMAINS_FREE[0]);
@@ -309,7 +341,6 @@ export default function Home({ initialError }) {
   const [shortLink, setShortLink] = useState("");
   const [inviteCode, setInviteCode] = useState("");
   const [error, setError] = useState("");
-  const [notFoundError, setNotFoundError] = useState(initialError || "");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState("");
