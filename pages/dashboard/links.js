@@ -12,7 +12,7 @@ import styles from "../../styles/Dashboard.module.css";
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions);
   if (!session?.user?.discordId) {
-    return { redirect: { destination: "/", permanent: false } };
+    return { redirect: { destination: "/?error=unauthenticated", permanent: false } };
   }
 
   await connectToDatabase();
