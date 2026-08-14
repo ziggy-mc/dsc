@@ -7,7 +7,7 @@ import { formidable } from "formidable";
 import fs from "fs/promises";
 import reportUploadUtils from "../../../lib/reportUploadUtils.cjs";
 
-const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me"];
+const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me", "inv.ziggymc.me", "go.ziggymc.me"];
 const {
   extractSingleFile,
   isImageMimeType,
