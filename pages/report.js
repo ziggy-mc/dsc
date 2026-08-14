@@ -5,7 +5,14 @@ import { authOptions } from "./api/auth/[...nextauth]";
 import Layout from "../components/Layout";
 import styles from "../styles/Report.module.css";
 
-const ALLOWED_DOMAINS = ["dscs.ziggymc.me", "invs.ziggymc.me", "ds.ziggymc.me", "d.ziggymc.me", "go.ziggymc.me", "inv.ziggymc.me"];
+const ALLOWED_DOMAINS = [
+  "dscs.ziggymc.me",
+  "invs.ziggymc.me",
+  "ds.ziggymc.me",
+  "d.ziggymc.me",
+  "go.ziggymc.me",
+  "inv.ziggymc.me",
+];
 
 export async function getServerSideProps({ req, res }) {
   const session = await getServerSession(req, res, authOptions);
