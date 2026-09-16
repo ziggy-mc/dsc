@@ -145,7 +145,7 @@ export default async function handler(req, res) {
   // Resolve short code
   /** Routes that must not be used as short codes */
   const RESERVED_SLUGS = new Set([
-    "api", "dashboard", "_next", "favicon.ico", "404", "500",
+    "api", "dashboard", "_next", "favicon.ico", "404", "500", "eventrigger", "evtrg", "muiwzi", "ziggymc", "terms", "privacy", "report", "links", "link"
   ]);
 
   let code;
