@@ -9,8 +9,8 @@ export default function Footer() {
           DC Invs
           <br />
           <span>(
-          <Link href="https://bugs.ziggymc.me/" className="underline decoration-white/30 underline-offset-4 transition-colors duration-300 hover:text-white/85">
-            muiwzi
+          <Link href="https://www.evtrg.com/byproduct?product=dcinvs&url=https%3A%2F%2Fds.ziggymc.me" className="underline decoration-white/30 underline-offset-4 transition-colors duration-300 hover:text-white/85">
+            A Eventrigger ByProduct
           </Link>)</span>
         </div>
 
