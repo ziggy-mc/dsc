@@ -1,6 +1,8 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./auth/[...nextauth]";
 import { getUserTier, countUserLinks, getUserLimits } from "../../lib/tiers";
+import { connectToDatabase } from "../../lib/mongodb";
+import User from "../../models/User";
 
 /**
  * GET /api/me – return current session and tier information
@@ -19,6 +21,10 @@ export default async function handler(req, res) {
   const tier = await getUserTier(discordId);
   const counts = await countUserLinks(discordId);
   const limits = await getUserLimits(discordId, tier);
+  await connectToDatabase();
+  const account = await User.findOne({ discordId })
+    .select("email emailVerified twoFactorEnabled")
+    .lean();
 
   return res.status(200).json({
     loggedIn: true,
@@ -29,5 +35,12 @@ export default async function handler(req, res) {
     image,
     counts,
     limits,
+    account: {
+      email: account?.email || null,
+      emailVerified: !!account?.emailVerified,
+      twoFactorEnabled: !!account?.twoFactorEnabled,
+      emailChangePolicy:
+        "To change your email, please contact support.",
+    },
   });
 }
